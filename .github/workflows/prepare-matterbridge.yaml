@@ -1,0 +1,20 @@
+name: Prepare Matterbridge
+
+on: [workflow_call]
+
+jobs:
+  fetch-matterbridge:
+    runs-on: ubuntu-latest
+
+    steps:
+       - name: Clone Matterbridge from GitHub
+         run: git clone --single-branch --branch edge https://github.com/Luligu/matterbridge.git ~/matterbridge
+  
+       - name: Prepare Matterbridge
+         run: |
+           cd ~/matterbridge
+           npm ci
+           npm build
+
+       - name: Link Matterbridge to the project
+         run: npm link ~/matterbridge

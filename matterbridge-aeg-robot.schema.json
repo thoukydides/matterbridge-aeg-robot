@@ -1,0 +1,91 @@
+{
+    "title": "Matterbridge AEG RX9 / Electrolux Pure i9 Robot Vacuum",
+    "description": "AEG Robot",
+    "type": "object",
+    "required": [
+        "apiKey",
+        "accessToken",
+        "refreshToken"
+    ],
+    "properties": {
+        "name": {
+            "description": "Plugin name",
+            "type": "string",
+            "readOnly": true,
+            "ui:widget": "hidden"
+        },
+        "type": {
+            "description": "Plugin type",
+            "type": "string",
+            "readOnly": true,
+            "ui:widget": "hidden"
+        },
+        "whiteList": {
+            "description": "Only expose devices listed here. Leave empty to expose all devices.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "uniqueItems": true,
+            "selectFrom": "name",
+            "default": []
+        },
+        "blackList": {
+            "description": "Exclude any devices listed here. Leave empty to allow all devices.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "uniqueItems": true,
+            "selectFrom": "name",
+            "default": []
+        },
+        "apiKey": {
+            "description": "API Key obtained from the Electrolux Group Developer Portal Dashboard.",
+            "type": "string"
+        },
+        "accessToken": {
+            "description": "Authorization Access Token obtained from the Electrolux Group Developer Portal Dashboard.",
+            "type": "string"
+        },
+        "refreshToken": {
+            "description": "Authorization Refresh Token obtained from the Electrolux Group Developer Portal Dashboard.",
+            "type": "string"
+        },
+        "pollIntervalSeconds": {
+            "description": "How often each robot is polled for status (recommend 30s for one robot, 60s for two, 90s for three, etc).",
+            "type": "integer",
+            "default": 30,
+            "minimum": 20,
+            "maximum": 600
+        },
+        "debug": {
+            "description": "Capture debug-level logging from this plugin, overriding the Matterbridge global log level setting.",
+            "type": "boolean",
+            "default": false
+        },
+        "debugFeatures": {
+            "description": "Enable advanced debug options. Only use when diagnosing specific issues.",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "enum": [
+                    "Run API Tests",
+                    "Run Unsafe API Tests",
+                    "Log Endpoint Debug",
+                    "Log API Headers",
+                    "Log API Bodies",
+                    "Log Appliance IDs"
+                ]
+            },
+            "default": []
+        },
+        "unregisterOnShutdown": {
+            "description": "Unregister all exposed devices on shutdown (used for development/testing)",
+            "type": "boolean",
+            "default": false,
+            "ui:widget": "hidden"
+        }
+    }
+}
