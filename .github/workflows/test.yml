@@ -1,0 +1,46 @@
+name: Test
+
+on: [push, workflow_dispatch]
+
+jobs:
+  test:
+    if: github.actor != 'dependabot[bot]'
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+        use-matterbridge-edge: [true]
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+  
+      - name: Prepare build environment
+        id: prepare
+        uses: ./.github/actions/prepare-environment
+        with:
+          node-version: ${{ matrix.node-version }}
+          use-matterbridge-edge: ${{ matrix.use-matterbridge-edge }} 
+
+      - name: Build the project
+        run: npm run build
+
+      - name: Add the plugin to Matterbridge
+        run: |
+          cp -R ./.github/config/matterbridge-aeg-robot.config.json ${{ steps.prepare.outputs.matterbridge_config }}
+          ${{ steps.prepare.outputs.matterbridge_cmd }} -add "$GITHUB_WORKSPACE"
+
+      - name: Retrieve an Electrolux Group API Access Token
+        run: |
+          curl -s https://www.thouky.co.uk/api/oauth/electrolux/${{ secrets.ELECTROLUX_API_KEY }} -o token.txt
+          echo "::add-mask::$(cat token.txt)"
+          echo "ELECTROLUX_ACCESS_TOKEN=$(cat token.txt)" >> $GITHUB_ENV
+      
+      - name: Run the tests
+        run: npm run test
+        env:
+          MATTERBRIDGE: ${{ steps.prepare.outputs.matterbridge_cmd }}
+          ELECTROLUX_API_KEY: ${{ secrets.ELECTROLUX_API_KEY }}
+          ELECTROLUX_ACCESS_TOKEN: ${{ env.ELECTROLUX_ACCESS_TOKEN }}

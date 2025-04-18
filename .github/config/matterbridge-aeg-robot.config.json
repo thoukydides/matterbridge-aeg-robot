@@ -1,0 +1,8 @@
+{
+    "name": "matterbridge-aeg-robot",
+    "type": "DynamicPlatform",
+    "refreshToken": "NotRefreshToken",
+    "debugFeatures": [
+        "Run API Tests"
+    ]
+}

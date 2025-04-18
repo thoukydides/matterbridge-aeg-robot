@@ -1,0 +1,46 @@
+{
+    "files.eol": "\n",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "editor.rulers": [
+        80
+    ],
+    "eslint.enable": true,
+    "cSpell.words": [
+        "AEGAPI",
+        "AEGAPIRX",
+        "aeiou",
+        "amazonwebservices",
+        "bierner",
+        "buymeacoffee",
+        "Cleanings",
+        "DARKGOLD",
+        "dbaeumer",
+        "devcontainers",
+        "Electrolux",
+        "INDIGOBLUE",
+        "MAHOGANYBRONZE",
+        "Matterbridge",
+        "nodemon",
+        "nodenext",
+        "NOTCONNECTED",
+        "OSBP",
+        "Pitstop",
+        "pncs",
+        "Replaceability",
+        "roboticvacuumcleaner",
+        "schedulable",
+        "SHALEGREY",
+        "SOFTSAND",
+        "SPACETEAL",
+        "Thoukydides",
+        "tyriar",
+        "YYYMMDD",
+        "Zanussi"
+    ],
+    "files.exclude": {
+        "node_modules/": true
+    },
+    "typescript.tsdk": "node_modules/typescript/lib"
+}

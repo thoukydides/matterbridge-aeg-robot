@@ -1,0 +1,92 @@
+{
+    "name": "matterbridge-aeg-robot",
+    "displayName": "Matterbridge AEG RX9 / Electrolux Pure i9 Robot Vacuum",
+    "version": "0.0.1",
+    "description": "Matterbridge AEG Robot",
+    "license": "ISC",
+    "keywords": [
+        "Matterbridge",
+        "Matter",
+        "AEG",
+        "Electrolux",
+        "RX9",
+        "RX9.1",
+        "RX9.2",
+        "Pure i9",
+        "Pure i9.1",
+        "Pure i9.2",
+        "robot",
+        "vacuum",
+        "cleaner"
+    ],
+    "author": {
+        "name": "Alexander Thoukydides",
+        "url": "https://www.thouky.co.uk/"
+    },
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/thoukydides"
+        },
+        {
+            "type": "paypal",
+            "url": "https://paypal.me/thoukydides"
+        },
+        {
+            "type": "ko-fi",
+            "url": "https://ko-fi.com/thouky"
+        },
+        {
+            "type": "buymeacoffee",
+            "url": "https://www.buymeacoffee.com/thouky"
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/thoukydides/matterbridge-aeg-robot.git"
+    },
+    "bugs": {
+        "url": "https://github.com/thoukydides/matterbridge-aeg-robot/issues"
+    },
+    "homepage": "https://github.com/thoukydides/matterbridge-aeg-robot",
+    "help": "https://github.com/thoukydides/matterbridge-aeg-robot#readme",
+    "changelog": "https://github.com/thoukydides/matterbridge-aeg-robot/blob/master/CHANGELOG.md",
+    "type": "module",
+    "main": "dist/index.js",
+    "engines": {
+        "node": "^22.0.0 || ^20.9.0 || ^18.20.0",
+        "matterbridge": "^3.0.0"
+    },
+    "dependencies": {
+        "node-persist": "^4.0.4",
+        "semver": "^7.7.1",
+        "ts-interface-checker": "^1.0.2",
+        "undici": "^6.21.2"
+    },
+    "devDependencies": {
+        "@eslint/eslintrc": "^3.3.1",
+        "@eslint/js": "^9.24.0",
+        "@tsconfig/node18": "^18.2.4",
+        "@types/eslint__js": "^8.42.3",
+        "@types/node": "^18.19.86",
+        "@types/node-persist": "^3.1.8",
+        "@types/semver": "^7.7.0",
+        "eslint": "^9.24.0",
+        "globals": "^16.0.0",
+        "rimraf": "^6.0.1",
+        "ts-interface-builder": "^0.3.3",
+        "tsx": "^4.19.3",
+        "typescript": "^5.8.3",
+        "typescript-eslint": "^8.30.1"
+    },
+    "scripts": {
+        "build-checkers": "mkdir -p ./src/ti && ts-interface-builder -c -o ./src/ti ./src/*-types.ts && tsx bin/ts-interface-post.ts ./src/ti",
+        "build-tsc": "tsc -p ./src",
+        "build": "npm run build-checkers && npm run build-tsc",
+        "clean": "rimraf ./dist",
+        "lint": "eslint eslint.config.mjs 'bin/**/*.ts' 'src/**/*.ts' --max-warnings=0",
+        "postversion": "git push && git push --tags",
+        "prepublishOnly": "npm run build && npm run lint",
+        "test": "tsx bin/test-startup.ts"
+    }
+}
