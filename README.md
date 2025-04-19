@@ -166,11 +166,11 @@ It supports a single command:
 
 The **RVC Clean Mode Cluster** indicates the type of clean being performed:
 
-| RX9.1          | RX9.2   | Full Clean | Full Clean Tags                                   | Spot Clean  | Spot Clean Tags | Description                                                 |
-| -------------- | ------- | :--------: | ------------------------------------------------- | :---------: | --------------- | ----------------------------------------------------------- |
-| `ECO mode`     | `Quiet` | *Quiet*    | *Vacuum*, *Quiet*, *LowNoise*, *LowEnergy*, *Min* | *QuietSpot* | +*Quick*        | Lower energy consumption and quieter                        |
-| n/a            | `Smart` | *Smart*    | *Vacuum*, *Auto*                                  | *SmartSpot* | +*Quick*        | Cleans quietly on hard surfaces, uses full power on carpets |
-| `Not ECO mode` | `Power` | *Power*    | *Vacuum*, *Max*, *DeepClean*                      | *PowerSpot* | +*Quick*        | Optimal cleaning performance, higher energy consumption     |
+| RX9.1          | RX9.2   | Full Clean | Full Clean ModeTags                               | Spot Clean  | Spot Clean ModeTags | Description                                                 |
+| -------------- | ------- | :--------: | ------------------------------------------------- | :---------: | ------------------- | ----------------------------------------------------------- |
+| `ECO mode`     | `Quiet` | *Quiet*    | *Vacuum*, *Quiet*, *LowNoise*, *LowEnergy*, *Min* | *QuietSpot* | +*Quick*            | Lower energy consumption and quieter                        |
+| n/a            | `Smart` | *Smart*    | *Vacuum*, *Auto*                                  | *SmartSpot* | +*Quick*            | Cleans quietly on hard surfaces, uses full power on carpets |
+| `Not ECO mode` | `Power` | *Power*    | *Vacuum*, *Max*, *DeepClean*                      | *PowerSpot* | +*Quick*            | Optimal cleaning performance, higher energy consumption     |
 
 Although the **ChangeToMode** command is defined, it will always return an error since the Electrolux API does not support selecting power modes or triggering spot cleans.
 
@@ -208,11 +208,15 @@ This plugin has only been tested with a single AEG RX9.2 robot vacuum (model `RX
 
 Matter controllers vary in their support for Matter 1.4 RVCs. This plugin is only tested with Apple HomeKit and the Apple Home app.
 
-### Apple Home Limitations
+### Apple HomeKit Limitations
 
-HomeKit appears to only use the information from the root **Device Basic Information** cluster, which is provided by Matterbridge, ignoring the **Bridged Device Basic Information** cluster. Hence, the device-specific details (Manufacturer, Model, Serial Number, and Firmware) are not visible in the Home app.
+The Apple Home app expects each robot vacuum to be a standalone, individually-paired Matter node implementing a single endpoint. However, Matterbridge acts as a Matter bridge - either a single bridge node for all plugins (*bridge* mode), or a separate bridge node per plugin (*childbridge* mode) - with each plugin’s device exposed as an additional child endpoint. This causes a few issues when using this plugin with the Home app:
+* **One robot vacuum per Matterbridge instance:** A separate Matterbridge instance is required for each robot vacuum. Each must use unique port numbers (both `-port <port>` and `-frontend <port>`) and their own home directory (`-homedir <path>`). This plugin should be the only one enabled in each instance. If your account contains multiple robot vacuums, use the `whitelist` setting to select one per instance.
+* **Device-specific information is ignored:** The Home app shows the bridge device information from Matterbridge’s own root **Device Basic Information** cluster, ignoring the plugin’s **Bridged Device Basic Information** cluster. As a result, the Home app displays the bridge’s name, manufacturer, model, serial number, and firmware version; *not* those of the robot vacuum.
 
-There have been reports that the Apple Home app only handles robot vacuums correctly when they are the sole device in the Matter node. If you are also using other Matterbridge plugins then it may be necessary to operate Matterbridge in **childbridge** mode (where each plugin is exposed as a separate node), or use a completely separate instance for this plugin. For those with multiple AEG RX 9 / Electrolux Pure i9 robot vacuums, separate Matterbridge instances are likely required for each. You can use the whiteList configuration option to select a single device to expose per instance.
+Other quirks in the Home app:
+* **Delayed docking:** The *Send to Dock* button first sets **RVC Run Mode** to *Idle* (which maps to `stop` in the Electrolux Group API), followed by a **GoHome** command (`home`). The Electrolux Group API silently ignores commands sent too quickly in succession, so this plugin inserts a 5-second delay between them. This causes the robot vacuum to pause briefly before returning to the dock.
+* **Incorrect clean mode display:** The Home app displays ModeTag values (e.g. *Deep Clean*, *Quick*) rather than the advertised modes (*Smart*, *PowerSpot*, etc) reported by the vacuum. Worse, it only shows these when not cleaning, even though the Electrolux Group API only provides meaningful values during cleaning.
 
 ## Changelog
 
