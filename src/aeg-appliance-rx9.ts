@@ -181,6 +181,7 @@ export class AEGApplianceRX9
     async pollApplianceState(): Promise<void> {
         const state = await this.api.getApplianceState();
         this.updateFromApplianceState(state);
+        this.updateDerivedAndEmit();
     }
 
     // Handle a status update for a periodic action
@@ -210,18 +211,13 @@ export class AEGApplianceRX9
             ecoMode:            'ecoMode'   in reported ? reported.ecoMode   : undefined,
             powerMode:          'powerMode' in reported ? reported.powerMode : undefined
         });
-
-        // Extract any new messages
-        this.emitMessages(reported.messageList.messages);
-
-        // Generate derived state and emit events
-        this.updateDerivedAndEmit();
     }
 
     // Updated derived values and emit changes
     updateDerivedAndEmit(): void {
         this.updateDerived();
         this.emit('preEmitPatch', this.state);
+        this.emitMessages();
         this.emitChangeEvents();
     }
 
@@ -305,7 +301,9 @@ export class AEGApplianceRX9
     }
 
     // Emit events for any new messages
-    emitMessages(messages: RX9Message[] = []): void {
+    emitMessages(): void {
+        const { messages } = this.state;
+
         // If there are no current messages then just flush the cache
         if (!messages.length) {
             this.emittedMessages.clear();
