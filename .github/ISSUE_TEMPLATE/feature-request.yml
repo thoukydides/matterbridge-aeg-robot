@@ -5,7 +5,7 @@ labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
-      value: value: |
+      value: |
         Before creating a new feature request, please search [closed/rejected issues](https://github.com/thoukydides/matterbridge-aeg-robot/issues?q=is%3Aissue) to avoid duplicates.
 
        🚨 Requests that propose:
