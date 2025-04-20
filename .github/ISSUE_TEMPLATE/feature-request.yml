@@ -1,0 +1,57 @@
+name: 🚧 Feature request
+description: Suggest a new feature or other enhancement.
+labels: ["enhancement"]
+
+body:
+  - type: markdown
+    attributes:
+      value: value: |
+        Before creating a new feature request, please search [closed/rejected issues](https://github.com/thoukydides/matterbridge-aeg-robot/issues?q=is%3Aissue) to avoid duplicates.
+
+       🚨 Requests that propose:
+       - Disabling or suppressing existing functionality via extra configuration options
+       - Using Matter clusters in ways that violate CSA specifications
+
+       ...are unlikely to be accepted.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description of Enhancement
+      description: "Please provide a clear and concise description of your proposed improvement. Include specific use cases or examples where this enhancement would be beneficial."
+      description: "Describe the feature or improvement that you would like to see. Be specific: What problem does it solve? How would a user experience it differently?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: egmap
+    attributes:
+      label: Electrolux Group API
+      description: "Please suggest how this feature could be supported using the [Electrolux Group API](https://developer.electrolux.one/documentation/reference)."
+    validations:
+      required: false
+
+  - type: textarea
+    id: mattermap
+    attributes:
+      label: Matter Mapping
+      description: "Please suggest which Matter cluster(s) from the [Matter Application Cluster Specification](https://csa-iot.org/developer-resource/specifications-download-request/) might apply."
+    validations:
+      required: false
+
+  - type: input
+    id: appliance
+    attributes:
+      label: AEG/Electrolux Appliance(s)
+      description: "If this enhancement relates to a specific appliance then please provide the manufacturer, model, and product number (PNC). These details can be found on the ratings label underneath the robot."
+      placeholder: "e.g. AEG RX9-2-4ANM 900 277 479"
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        **Important notes:**
+        - Feature requests must be compatible with the capabilities of both Matter and the Electrolux Group API.
+        - Features that fall outside the scope of either are unlikely to be implemented.
+        - Detailed, actionable suggestions with technical rationale, are much more likely to be considered.

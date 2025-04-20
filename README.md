@@ -21,7 +21,7 @@ AEG, Electrolux, and Zanussi are trademarks of [AB Electrolux](https://www.elect
 **Important:** This plugin requires Matterbridge version 3.0 (or later), or a recent build from the Matterbridge `edge` branch. At the time of writing, the current stable release is 2.2.8, so please ensure you are using the appropriate version for full compatibility.
 
 ### Step 1 - Create Account and Setup Robot Vacuum
-1. Use the [AEG](https://apps.apple.com/gb/app/aeg/id1599494494) app to create an account. *(It may be necessary to logout and login again to complete account creation.)*
+1. Use the AEG [iPhone](https://apps.apple.com/gb/app/aeg/id1599494494) or [Android](https://play.google.com/store/apps/details?id=com.electrolux.oneapp.android.aeg) app to create an account. *(It may be necessary to logout and login again to complete account creation.)*
 1. Add the RX series robot vacuum to your AEG/Electrolux/Zanussi account.
 
 ### Step 2 - Obtain Electrolux Web API Credentials
