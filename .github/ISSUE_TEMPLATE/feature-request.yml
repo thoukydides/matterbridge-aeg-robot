@@ -8,7 +8,7 @@ body:
       value: |
         Before creating a new feature request, please search [closed/rejected issues](https://github.com/thoukydides/matterbridge-aeg-robot/issues?q=is%3Aissue) to avoid duplicates.
 
-       🚨 Requests that propose:
+        🚨 Requests that propose:
         - Disabling or suppressing existing functionality via extra configuration options
         - Using Matter clusters in ways that violate CSA specifications
 
