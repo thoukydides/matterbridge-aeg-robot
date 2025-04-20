@@ -9,16 +9,15 @@ body:
         Before creating a new feature request, please search [closed/rejected issues](https://github.com/thoukydides/matterbridge-aeg-robot/issues?q=is%3Aissue) to avoid duplicates.
 
        🚨 Requests that propose:
-       - Disabling or suppressing existing functionality via extra configuration options
-       - Using Matter clusters in ways that violate CSA specifications
+        - Disabling or suppressing existing functionality via extra configuration options
+        - Using Matter clusters in ways that violate CSA specifications
 
-       ...are unlikely to be accepted.
+        ...are unlikely to be accepted.
 
   - type: textarea
     id: description
     attributes:
       label: Description of Enhancement
-      description: "Please provide a clear and concise description of your proposed improvement. Include specific use cases or examples where this enhancement would be beneficial."
       description: "Describe the feature or improvement that you would like to see. Be specific: What problem does it solve? How would a user experience it differently?"
     validations:
       required: true
