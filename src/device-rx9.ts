@@ -1,7 +1,7 @@
 // Matterbridge plugin for AEG RX9 / Electrolux Pure i9 robot vacuum
 // Copyright © 2025 Alexander Thoukydides
 
-import { AnsiLogger, nf, YELLOW } from 'matterbridge/logger';
+import { AnsiLogger } from 'matterbridge/logger';
 import { Config } from './config-types.js';
 import {
     EndpointRX9,
@@ -23,14 +23,7 @@ import { ChangeToModeError, RvcOperationalStateError } from './error-rx9.js';
 import { isDeepStrictEqual } from 'util';
 import { formatSeconds, MS } from './utils.js';
 import { ActivityRX9 } from './aeg-appliance-rx9-ctrl-activity.js';
-
-// Log colours
-const RR = nf;                  // Reset to normal text (light grey)
-const AN = '\u001B[38;5;87m';   // Attribute or event names (bright cyan)
-const AV = YELLOW;              // Attribute or event values
-const CN = '\u001B[38;5;120m';  // Command cluster (bright green)
-const CV = YELLOW;              // Command name/value
-const CR = YELLOW;              // Command translated to API (black on yellow)
+import { AN, AV, CN, CV, RR } from './logger.js';
 
 // A Matterbridge robot vacuum cleaner device
 export class DeviceRX9 extends EndpointRX9 {
@@ -69,19 +62,19 @@ export class DeviceRX9 extends EndpointRX9 {
         // Handle RVC Operational State Pause/Resume/GoHome commands
         this.setCommandHandlerRX9('Pause', async () => {
             const activity: ActivityRX9 = 'Pause';
-            this.log.info(`${CN}RVC Operational State ${CV}Pause${RR} → ${CR}${activity}${RR}`);
+            this.log.info(`${CN}RVC Operational State ${CV}Pause${RR} → ${CV}${activity}${RR}`);
             const allowed = await this.appliance.setActivity(activity);
             if (!allowed) throw new RvcOperationalStateError.CommandInvalidInState();
         });
         this.setCommandHandlerRX9('Resume', async () => {
             const activity: ActivityRX9 = 'Resume';
-            this.log.info(`${CN}RVC Operational State ${CV}Resume${RR} → ${CR}${activity}${RR}`);
+            this.log.info(`${CN}RVC Operational State ${CV}Resume${RR} → ${CV}${activity}${RR}`);
             const allowed = await this.appliance.setActivity(activity);
             if (!allowed) throw new RvcOperationalStateError.CommandInvalidInState();
         });
         this.setCommandHandlerRX9('GoHome', async () => {
             const activity: ActivityRX9 = 'Home';
-            this.log.info(`${CN}RVC Operational State ${CV}GoHome${RR} → ${CR}${activity}${RR}`);
+            this.log.info(`${CN}RVC Operational State ${CV}GoHome${RR} → ${CV}${activity}${RR}`);
             const allowed = await this.appliance.setActivity(activity);
             if (!allowed) throw new RvcOperationalStateError.CommandInvalidInState();
         });
@@ -94,7 +87,7 @@ export class DeviceRX9 extends EndpointRX9 {
             };
             const activity = activityMap[newMode];
             this.log.info(`${CN}RVC Run Mode${RR} ChangeToMode ${CV}${RvcRunModeRX9[newMode]}${RR}`
-                        + ` (${CV}${newMode}${RR}) → ${CR}${activity}${RR}`);
+                        + ` (${CV}${newMode}${RR}) → ${CV}${activity}${RR}`);
             const allowed = await this.appliance.setActivity(activity);
             if (!allowed) throw new ChangeToModeError.InvalidInMode();
         });
@@ -103,7 +96,7 @@ export class DeviceRX9 extends EndpointRX9 {
         this.setCommandHandlerRX9('ChangeCleanMode', newMode => {
             // API does not support changing power mode or selecting spot cleaning
             this.log.info(`${CN}RVC Clean Mode${RR} ChangeToMode ${CV}${RvcCleanModeRX9[newMode]}${RR}`
-                + ` (${CV}${newMode}${RR}) → ${CR}not supported${RR}`);
+                + ` (${CV}${newMode}${RR}) → ${CV}not supported${RR}`);
             throw new Error('Unsupported by Electrolux Global API');
         });
     }

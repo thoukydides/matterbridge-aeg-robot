@@ -11,6 +11,7 @@ import {
     RX92PowerMode,
     RX9RobotStatus
 } from './aegapi-rx9-types.js';
+import { RR, RT, RV } from './logger.js';
 
 // Descriptions of the robot activity
 const activityNames: Record<RX9RobotStatus, string | null> = {
@@ -41,18 +42,18 @@ const batteryNames: Record<RX9BatteryStatus, string> = {
 };
 
 // Descriptions of dustbin states
-const dustbinNames: Record<RX9Dustbin, string> = {
-    [RX9Dustbin.Unknown]:                       'UNKNOWN',
-    [RX9Dustbin.Present]:                       'PRESENT (and not full)',
-    [RX9Dustbin.Missing]:                       'MISSING',
-    [RX9Dustbin.Full]:                          'FULL (and requires emptying)'
+const dustbinNames: Record<RX9Dustbin, { value: string, extra?: string }> = {
+    [RX9Dustbin.Unknown]:   { value: 'UNKNOWN' },
+    [RX9Dustbin.Present]:   { value: 'PRESENT', extra: 'not full' },
+    [RX9Dustbin.Missing]:   { value: 'MISSING' },
+    [RX9Dustbin.Full]:      { value: 'FULL',    extra: 'requires emptying' }
 };
 
 // Descriptions of power modes
-const powerModeNames: Record<RX92PowerMode, string> = {
-    [RX92PowerMode.Quiet]:  'QUIET (lower energy consumption and quieter)',
-    [RX92PowerMode.Smart]:  'SMART (cleans quietly on hard surfaces, uses full power on carpets)',
-    [RX92PowerMode.Power]:  'POWER (optimal cleaning performance, higher energy consumption)'
+const powerModeNames: Record<RX92PowerMode, { value: string, extra: string }> = {
+    [RX92PowerMode.Quiet]:  { value: 'QUIET',   extra: 'lower energy consumption and quieter' },
+    [RX92PowerMode.Smart]:  { value: 'SMART',   extra: 'cleans quietly on hard surfaces, uses full power on carpets' },
+    [RX92PowerMode.Power]:  { value: 'POWER',   extra: 'optimal cleaning performance, higher energy consumption' }
 };
 
 // Logging of information about a robot
@@ -79,40 +80,43 @@ export class AEGApplianceRX9Log {
     logStatic(): void {
         const { applianceType, brand, capabilities, colour, model, variant } = this.appliance;
         const redacted = !this.appliance.config.debugFeatures.includes('Log Appliance IDs');
-        this.log.info(`My name is "${this.appliance.applianceName}"`);
-        this.log.info(`${brand} ${applianceType} (${model}/${variant}) ${colour}`);
-        if (!redacted) this.log.info(`Product ID ${this.appliance.applianceId}`);
-        this.log.info(`Product number code ${this.appliance.pnc}`);
-        if (!redacted) this.log.info(`Serial number ${this.appliance.serialNumber}`);
-        this.log.info(`Hardware platform ${this.appliance.platform}`);
-        this.log.info(`Supports ${plural(capabilities.length, 'capability')}: ${formatList([...capabilities].sort())}`);
+        this.log.info(`${RT}My name is "${RV}${this.appliance.applianceName}${RT}"${RR}`);
+        this.log.info(`${RV}${brand} ${applianceType}${RT} (${RV}${model}${RT}/${RV}${variant}${RT}) ${RV}${colour}${RR}`);
+        if (!redacted) this.log.info(`${RT}Product ID ${RV}${this.appliance.applianceId}${RR}`);
+        this.log.info(`${RT}Product number code ${RV}${this.appliance.pnc}${RR}`);
+        if (!redacted) this.log.info(`${RT}Serial number ${RV}${this.appliance.serialNumber}${RR}`);
+        this.log.info(`${RT}Hardware platform ${RV}${this.appliance.platform}${RR}`);
+        const capabilityValues = [...capabilities].sort().map(c => `${RV}${c}${RT}`);
+        this.log.info(`${RT}Supports ${plural(capabilities.length, 'capability')}: ${formatList(capabilityValues)}${RR}`);
     }
 
     // Log initial values and changes for other status
     logStatus(): void {
         this.appliance.on('firmwareVersion', (firmwareVersion: string) => {
-            this.log.info(`Firmware version ${firmwareVersion} installed`);
+            this.log.info(`${RT}Firmware version ${RV}${firmwareVersion}${RT} installed${RR}`);
         }).on('batteryStatus', (batteryStatus: RX9BatteryStatus) => {
-            this.log.info(`Battery level is ${batteryNames[batteryStatus]}`);
+            this.log.info(`${RT}Battery level is ${RV}${batteryNames[batteryStatus]}${RR}`);
         }).on('robotStatus', (robotStatus: RX9RobotStatus) => {
-            this.log.info(`Robot is ${activityNames[robotStatus]}`);
+            this.log.info(`${RT}Robot is ${RV}${activityNames[robotStatus]}${RR}`);
         }).on('fauxStatus', (fauxStatus: RX9RobotStatus) => {
             if (fauxStatus === this.appliance.state.robotStatus) return;
-            this.log.info(`Predicting robot will be ${activityNames[fauxStatus]}`);
+            this.log.info(`${RT}Predicting robot will be ${RV}${activityNames[fauxStatus]}${RR}`);
         }).on('dustbinStatus', (dustbinStatus: RX9Dustbin) => {
-            this.log.info(`Dust collection bin is ${dustbinNames[dustbinStatus]}`);
+            const { value, extra } = dustbinNames[dustbinStatus];
+            this.log.info(`${RT}Dust collection bin is ${RV}${value}${extra ? `${RT} and ${extra}` : ''}${RR}`);
         }).on('powerMode', (powerMode?: RX92PowerMode) => {
-            if (powerMode === undefined) this.log.info('Unknown power mode');
-            else this.log.info(`Power mode is set to ${powerModeNames[powerMode]}`);
+            if (powerMode === undefined) return;
+            const { value, extra } = powerModeNames[powerMode];
+            this.log.info(`${RT}Power mode is set to ${RV}${value}${RT} (${extra})${RR}`);
         }).on('ecoMode', (ecoMode?: boolean) => {
-            if (ecoMode === undefined) this.log.info('Unknown ECO mode');
-            else this.log.info(`ECO mode is ${ecoMode ? 'enabled' : 'disabled'}`);
+            if (ecoMode === undefined) return;
+            this.log.info(`${RT}ECO mode is ${RV}${ecoMode ? 'enabled' : 'disabled'}${RR}`);
         }).on('enabled', (enabled: boolean) => {
             this.log.log(enabled ? LogLevel.INFO : LogLevel.WARN,
-                         `Robot is ${enabled ? 'enabled' : 'disabled'}`);
+                         `${RT}Robot is ${RV}${enabled ? 'enabled' : 'disabled'}${RR}`);
         }).on('connected', (connected: boolean) => {
             this.log.log(connected ? LogLevel.INFO : LogLevel.WARN,
-                         `Robot ${connected ? 'is' : 'is NOT'} connected to the cloud servers`);
+                         `${RT}Robot ${RV}${connected ? 'is' : 'is NOT'}${RT} connected to the cloud servers${RR}`);
         }).on('apiError', (err?: unknown) => { this.logHealth(err); });
     }
 
@@ -126,7 +130,7 @@ export class AEGApplianceRX9Log {
             }
         } else {
             this.loggedHealthErrors.clear();
-            this.log.info('Successfully connected to cloud servers');
+            this.log.info(`${RT}Successfully connected to cloud servers${RR}`);
         }
     }
 

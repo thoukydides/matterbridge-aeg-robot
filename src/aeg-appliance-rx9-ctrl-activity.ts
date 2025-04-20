@@ -5,8 +5,8 @@ import { AEGApplianceRX9 } from './aeg-appliance-rx9.js';
 import { RX9CleaningCommand, RX9RobotStatus } from './aegapi-rx9-types.js';
 import { AEGApplianceRX9Ctrl } from './aeg-appliance-rx9-ctrl.js';
 import { formatList, formatMilliseconds, MS, plural } from './utils.js';
-import { nf } from 'matterbridge/logger';
 import { setTimeout } from 'node:timers/promises';
+import { CC, RR } from './logger.js';
 
 // Expected result of starting an activity (true = no-op, undefined = invalid)
 type StatusName = keyof typeof RX9RobotStatus
@@ -74,10 +74,6 @@ if (errors.length) throw new Error(`Inconsistent activity mapping tables:\n${err
 // Minimum interval between successive commands
 const COMMAND_INTERVAL = 5 * MS; // 5 seconds
 
-// Log colours
-const RR = `\u001B[39;49m${nf}`;// Reset to normal text (light grey)
-const CR = '\u001B[30;43m';     // RX9CleaningCommand
-
 // Robot controller for changing the activity
 export class AEGApplianceRX9CtrlActivity extends AEGApplianceRX9Ctrl<ActivityRX9> {
 
@@ -105,7 +101,7 @@ export class AEGApplianceRX9CtrlActivity extends AEGApplianceRX9Ctrl<ActivityRX9
 
         // Sequence the command(s) to the robot
         this.log.info(`Sending ${plural(commands.length, 'command', false)}`
-                    + ` ${formatList(commands.map(c => `${CR}${c}${RR}`))} to ${description}`);
+                    + ` ${formatList(commands.map(c => `${CC}${c}${RR}`))} to ${description}`);
         for (const command of commands) {
             // Ensure a minimum interval between commands
             const delay = this.lastCommandTime + COMMAND_INTERVAL - Date.now();
