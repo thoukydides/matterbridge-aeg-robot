@@ -113,13 +113,13 @@ function maskAccessToken(token: string): string {
 
 // Mask a serial number
 function maskSerialNumber(name: string, _serialNumber: string): string {
-    return `«SERIAL_NUMBER: "${name}"»`;
+    return `<SERIAL_NUMBER: "${name}">`;
 }
 
 // Mask an applianceId
 function maskApplianceId(name: string, applianceId: string): string {
     const pnc = applianceId.slice(0, LENGTH.pnc);
-    return `«PRODUCT_ID: ${pnc}... "${name}">»`;
+    return `<PRODUCT_ID: ${pnc}... "${name}">`;
 }
 
 // Mask a token, leaving just the first and final few characters
@@ -127,7 +127,7 @@ function maskToken(type: string, token: string, details: Record<string, string> 
     let masked = `${token.slice(0, 4)}...${token.slice(-8)}`;
     const parts = Object.entries(details).map(([key, value]) => `${key}=${value}`);
     if (parts.length) masked += ` (${formatList(parts)})`;
-    return `«${type}: ${masked}»`;
+    return `<${type}: ${masked}>`;
 }
 
 // Decode a Base64URL encoded string
