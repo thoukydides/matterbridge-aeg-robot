@@ -48,6 +48,11 @@
             "description": "Authorization Access Token obtained from the Electrolux Group Developer Portal Dashboard.",
             "type": "string"
         },
+        "accessTokenURL": {
+            "description": "An endpoint that can provide an Access Token (used for development/testing).",
+            "type": "string",
+            "ui:widget": "hidden"
+        },
         "refreshToken": {
             "description": "Authorization Refresh Token obtained from the Electrolux Group Developer Portal Dashboard.",
             "type": "string"
@@ -82,7 +87,7 @@
             "default": []
         },
         "unregisterOnShutdown": {
-            "description": "Unregister all exposed devices on shutdown (used for development/testing)",
+            "description": "Unregister all exposed devices on shutdown (used for development/testing).",
             "type": "boolean",
             "default": false,
             "ui:widget": "hidden"

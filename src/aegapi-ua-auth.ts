@@ -2,7 +2,6 @@
 // Copyright © 2025 Alexander Thoukydides
 
 import { AnsiLogger } from 'matterbridge/logger';
-import nodePersist from 'node-persist';
 import { setTimeout } from 'node:timers/promises';
 import { once } from 'node:events';
 import {
@@ -16,7 +15,8 @@ import {
     Headers,
     Method,
     Request,
-    UAOptions
+    UAOptions,
+    USER_AGENT
 } from './aegapi-ua.js';
 import { MS, logError } from './utils.js';
 import {
@@ -29,13 +29,14 @@ import { checkers } from './ti/aegapi-auth-types.js';
 import NodePersist from 'node-persist';
 
 // Time before token expiry to request a refresh
-const REFRESH_WINDOW_MS = 60 * 60 * 1000; // (60 minutes)
+const REFRESH_WINDOW_MS             = 10 * 60 * 1000;   // (10 minutes)
 
 // Delay between retrying failed authorisation operations
-const REFRESH_RETRY_DELAY_MS = 60 * 1000; // (1 minute)
+const REFRESH_RETRY_DELAY_MS        =      60 * 1000;   // (1 minute)
 
 // Delay before refreshing a new token (expiresIn is usually 12 hours)
-const NEW_TOKEN_REFRESH_DELAY_MS = 5 * 60 * 1000; // (5 minutes)
+const NEW_TOKEN_REFRESH_DELAY_MS    = 15 * 60 * 1000;   // (15 minutes)
+const FETCH_TOKEN_REFRESH_DELAY_MS  = 60 * 60 * 1000;   // (1 hour)
 
 // Authorisation for accessing the Electrolux Group API
 export class AEGAuthoriseUserAgent extends AEGUserAgent {
@@ -79,7 +80,10 @@ export class AEGAuthoriseUserAgent extends AEGUserAgent {
     // Attempt to authorise access to the API
     async authoriseUserAgent(): Promise<void> {
         // Retrieve any saved tokens
-        if (!await this.loadTokens()) {
+        if (await this.fetchAccessTokenFromURL()) {
+            this.log.info('Using access token from URL for testing');
+            this.authorisedFn.resolve();
+        } else if (!await this.loadTokens()) {
             this.log.info('No saved access token; using credentials from configuration');
             await this.saveTokens(this.config.accessToken, this.config.refreshToken, NEW_TOKEN_REFRESH_DELAY_MS);
             this.authorisedFn.resolve();
@@ -106,12 +110,13 @@ export class AEGAuthoriseUserAgent extends AEGUserAgent {
                 this.refreshAbortController = undefined;
 
                 // Refresh the tokens (updates both access token and refresh token)
-                const token = await this.tokenRefresh(this.token.refreshToken);
-                await this.saveTokens(token.accessToken, token.refreshToken, token.expiresIn);
+                if (!await this.fetchAccessTokenFromURL()) {
+                    const token = await this.tokenRefresh(this.token.refreshToken);
+                    await this.saveTokens(token.accessToken, token.refreshToken, token.expiresIn);
+                }
 
-                // Save the updated token
+                // Use the updated token
                 this.log.info('Successfully refreshed access token');
-                await nodePersist.setItem(this.persistKey, this.token);
                 this.authorisedFn.resolve();
 
             } catch (cause) {
@@ -152,6 +157,19 @@ export class AEGAuthoriseUserAgent extends AEGUserAgent {
         const expiresAt = Date.now() + expiresIn * MS;
         this.token = { accessToken, refreshToken, expiresAt };
         await this.persist.setItem(this.persistKey, this.token);
+    }
+
+    // Attempt to fetch an access token from a configured URL for testing
+    async fetchAccessTokenFromURL(): Promise<boolean> {
+        const { accessTokenURL, accessToken, refreshToken } = this.config;
+        if (!accessTokenURL || accessToken || refreshToken) return false;
+        const headers = { 'User-Agent': USER_AGENT };
+        const response = await fetch(accessTokenURL, { headers });
+        if (!response.ok) throw new Error(`Failed to fetch access token: ${response.statusText}`);
+        const fetchedToken = await response.text();
+        const expiresAt = Date.now() + FETCH_TOKEN_REFRESH_DELAY_MS;
+        this.token = { accessToken: fetchedToken, refreshToken: '', expiresAt };
+        return true;
     }
 
     // Authorization header value for the current access token

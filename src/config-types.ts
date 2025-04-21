@@ -22,6 +22,7 @@ export interface Config {
     // Plugin configuration
     apiKey:                 string;
     accessToken:            string;
+    accessTokenURL?:        string;
     refreshToken:           string;
     pollIntervalSeconds:    number;
     debug:                  boolean;

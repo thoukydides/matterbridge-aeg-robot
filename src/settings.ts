@@ -39,6 +39,13 @@ export const DEFAULT_CONFIG: Partial<Config> = {
 };
 
 // Allow API and authorization credentials to be set via environment variables
-if (process.env.ELECTROLUX_API_KEY)       DEFAULT_CONFIG.apiKey       = process.env.ELECTROLUX_API_KEY;
-if (process.env.ELECTROLUX_ACCESS_TOKEN)  DEFAULT_CONFIG.accessToken  = process.env.ELECTROLUX_ACCESS_TOKEN;
-if (process.env.ELECTROLUX_REFRESH_TOKEN) DEFAULT_CONFIG.refreshToken = process.env.ELECTROLUX_REFRESH_TOKEN;
+if (process.env.ELECTROLUX_API_KEY) {
+    DEFAULT_CONFIG.apiKey = process.env.ELECTROLUX_API_KEY;
+}
+if (process.env.ELECTROLUX_ACCESS_TOKEN_URL) {
+    Object.assign(DEFAULT_CONFIG, {
+        accessTokenURL: process.env.ELECTROLUX_ACCESS_TOKEN_URL,
+        accessToken:    '',
+        refreshToken:   ''
+    });
+}

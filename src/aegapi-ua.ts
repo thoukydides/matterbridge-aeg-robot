@@ -57,6 +57,9 @@ export interface RequestResponse {
 // Base URL for Electrolux Group API
 export const ELECTROLUX_GROUP_API_URL = 'https://api.developer.electrolux.one';
 
+// User agent string
+export const USER_AGENT = `${PLUGIN_NAME}/${PLUGIN_VERSION}`;
+
 /* eslint-disable max-len */
 
 // User agent for accessing the Electrolux Group API
@@ -98,7 +101,7 @@ export class AEGUserAgent {
         // Set the default headers
         this.defaultHeaders = {
             'x-api-key':    config.apiKey,
-            'User-Agent':   `${PLUGIN_NAME}/${PLUGIN_VERSION}`
+            'User-Agent':   USER_AGENT
         };
     }
 
