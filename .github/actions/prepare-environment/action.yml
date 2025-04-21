@@ -31,9 +31,8 @@ runs:
       run: |
         set -e
         if [[ "${{ inputs.use-matterbridge-edge }}" == "true" ]]; then
-          MATTERBRIDGE_DIR="$RUNNER_TEMP/matterbridge"
-          echo "🔧 Cloning Matterbridge from GitHub to $MATTERBRIDGE_DIR..."
-          npm run setup-matterbridge-edge
+          echo "🔧 Cloning Matterbridge from GitHub..."
+          MATTERBRIDGE_DIR="$RUNNER_TEMP/matterbridge" npm run setup-matterbridge-edge
         else
           echo "📦 Installing Matterbridge from npm..."
           npm run setup-matterbridge-npm
