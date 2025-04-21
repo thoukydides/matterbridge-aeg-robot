@@ -3,94 +3,125 @@
 
 import assert from 'node:assert';
 import { spawn, ChildProcessWithoutNullStreams } from 'node:child_process';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { Config } from '../dist/config-types.js';
+import { once } from 'node:events';
 
-// Command to use to launch Matterbridge
-const MATTERBRIDGE = process.env.MATTERBRIDGE;
-if (!MATTERBRIDGE) throw new Error('MATTERBRIDGE environment variable not set');
-const [SPAWN_COMMAND, ...SPAWN_ARGS] = MATTERBRIDGE.split(' ');
+// Spawn command to run Matterbridge (-homedir is added later)
+const SPAWN_COMMAND = 'node';
+const SPAWN_ARGS = ['node_modules/matterbridge/dist/cli.js'];
+
+// Plugin configuration file for running tests
+const PLUGIN_CONFIG_FILE = '.matterbridge/matterbridge-aeg-robot.config.json';
+const PLUGIN_CONFIG_CONTENT: Partial<Config> = {
+    'debugFeatures': [
+        'Run API Tests'
+    ]
+};
+
+// Log messages indicating success
+const SUCCESS_TESTS: { name: string, regexp: RegExp }[] = [
+    { name: 'API Tests',        regexp: /\[Matterbridge AEG Robot\] All \d+ API tests passed/ },
+    { name: 'Register Device',  regexp: /\[Matterbridge AEG Robot\] Registered [1-9]\d* robot vacuum device/ }
+];
 
 // Match ANSI colour codes so that they can be stripped
 // eslint-disable-next-line no-control-regex
 const ANSI_ESCAPE = /\x1B\[[0-9;]*[msuK]/g;
 
-// Log messages indicating success
-const SUCCESS_OUTPUT_REGEX = [
-    /\[Matterbridge AEG Robot\] All \d+ API tests passed/,
-    /\[Matterbridge AEG Robot\] Registered \d+ robot vacuum device/
-];
+// Length of time to wait
+const TIMEOUT_MATTERBRIDGE_MS = 15 * 1000; // 15 seconds
 
-// Length of time to wait (seconds)
-const TIMEOUT_SUCCESS = 15;
+// Register the plugin with Matterbridge
+async function configureAndRegisterPlugin(): Promise<void> {
 
-// Collect stdout and stderr, checking for success message(s)
-let rawOutput = '', cleanOutput = '';
-let testSuccessful = false;
-async function parseOutputStream(child: ChildProcessWithoutNullStreams, streamName: 'stdout' | 'stderr'): Promise<void> {
-    try {
+    // Create a temporary directory for Matterbridge to use as its home directory
+    const matterbridgeDir = await fs.mkdtemp(path.join(os.tmpdir(), 'matterbridge-test-'));
+    SPAWN_ARGS.push('-homedir', matterbridgeDir);
+
+    // Create a plugin configuration file
+    const pluginConfigFile = path.join(matterbridgeDir, PLUGIN_CONFIG_FILE);
+    await fs.mkdir(path.dirname(pluginConfigFile), { recursive: true });
+    await fs.writeFile(pluginConfigFile, JSON.stringify(PLUGIN_CONFIG_CONTENT, null, 4));
+
+    // Register the plugin with Matterbridge
+    const child = spawn(SPAWN_COMMAND, [...SPAWN_ARGS, '-add', '.'], {
+        stdio:      'ignore',
+        timeout:    TIMEOUT_MATTERBRIDGE_MS
+    });
+    await once(child, 'exit');
+}
+
+// Run the plugin test
+let rawOutput = '';
+async function testPlugin(): Promise<void> {
+    // Launch Matterbridge, piping stdout and stderr for monitoring
+    const child = spawn(SPAWN_COMMAND, SPAWN_ARGS, {
+        stdio:      'pipe',
+        timeout:    TIMEOUT_MATTERBRIDGE_MS
+    });
+
+    // Monitor stdout and stderr until they close
+    let remainingTests = SUCCESS_TESTS;
+    const testOutputStream = async (
+        child: ChildProcessWithoutNullStreams,
+        streamName: 'stdout' | 'stderr'
+    ): Promise<void> => {
         const stream = child[streamName];
         stream.setEncoding('utf8');
         for await (const chunk of stream) {
             assert(typeof chunk === 'string');
-
-            // Accumulate the log output
-            rawOutput   += chunk.toString();
-            cleanOutput += chunk.toString().replace(ANSI_ESCAPE, '');
+            rawOutput += chunk.toString();
 
             // Check for all of the expected log messages
-            if (!testSuccessful && SUCCESS_OUTPUT_REGEX.every(re => re.test(cleanOutput))) {
-                testSuccessful = true;
-                child.kill('SIGTERM');
-            }
+            const cleanChunk = chunk.toString().replace(ANSI_ESCAPE, '');
+            remainingTests = remainingTests.filter(({ regexp }) => !regexp.test(cleanChunk));
+            if (remainingTests.length === 0) child.kill('SIGTERM');
         }
-    } catch (err) {
-        // Stream should only terminate if the process is killed
-        if (!testSuccessful) {
-            throw new Error(`Unexpected ${streamName} termination: ${String(err)}`);
-        }
+    };
+    await Promise.all([
+        testOutputStream(child, 'stdout'),
+        testOutputStream(child, 'stderr')
+    ]);
+
+    // Check whether the test was successful
+    if (child.exitCode !== null) {
+        throw new Error(`Process exited with code ${child.exitCode}`);
     }
-};
+    if (remainingTests.length) {
+        const failures = remainingTests.map(t => t.name).join(', ');
+        throw new Error(`Process terminated with test failures: ${failures}`);
+    }
+}
 
 // Run the test
 void (async (): Promise<void> => {
-    // Attempt to launch Matterbridge
-    const child = spawn(SPAWN_COMMAND, SPAWN_ARGS, {
-        detached:   true,
-        stdio:      'pipe',
-        timeout:    TIMEOUT_SUCCESS * 1000
-    });
-
     try {
 
-        // Monitor stdout and stderr until they close
-        await Promise.all([
-            parseOutputStream(child, 'stdout'),
-            parseOutputStream(child, 'stderr')
-        ]);
+        // Prepare the plugin configuration and register with Matterbridge
+        console.log('🔧 Configuring plugin and registering with Matterbridge...');
+        await configureAndRegisterPlugin();
 
-        // Report an error if the expected log messages have not appeared
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (testSuccessful) {
-            console.log('Test successful');
-        } else {
-            throw new Error('Process terminated without success');
-        }
+        // Run the test
+        console.log('🔍 Running Matterbridge plugin test...');
+        await testPlugin();
+
+        // If this point is reached, the test was successful
+        console.log('🟢 Test successful');
 
     } catch (err) {
 
-        // Test finished without seeing the expected log messages
+        // The test failed so log the command output
+        console.log(rawOutput);
+
+        // Extract and log the individual error messages
         const errs = err instanceof AggregateError ? err.errors : [err];
         const messages = errs.map(e => e instanceof Error ? e.message : String(e));
-        if (child.exitCode !== null) messages.unshift(`Matterbridge exited with code ${child.exitCode}`);
-        console.error('Test failed:\n' + messages.map(m => `    ${m}\n`).join(''));
-        console.log(rawOutput);
+        console.error('🔴 Test failed:\n' + messages.map(m => `    ${m}\n`).join(''));
+
+        // Return a non-zero exit code
         process.exitCode = 1;
-
-    } finally {
-
-        if (!child.killed) {
-            console.warn('Sending SIGKILL to Matterbridge');
-            child.kill('SIGKILL');
-        }
-
     }
 })();
