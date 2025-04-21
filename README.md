@@ -78,7 +78,6 @@ You can include additional settings in `config.json` to customise the behaviour 
     "accessToken":            "<Authorization Access Token>",
     "refreshToken":           "<Authorization Refresh Token>",
     "pollIntervalsSeconds":   30,
-    "treatIdleAsGoHome":      true,
     "debug":                  false,
     "debugFeatures":          ["Run API Tests", "Run Unsafe API Tests", "Log Endpoint Debug", "Log API Headers", "Log API Bodies", "Log Appliance IDs"],
     "unregisterOnShutdown":   false
