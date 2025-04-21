@@ -11,15 +11,6 @@ inputs:
     required: false
     default: 'true'
 
-outputs:
-  matterbridge_cmd:
-    description: Command to execute Matterbridge
-    value: ${{ steps.matterbridge.outputs.matterbridge_cmd }}
-
-  matterbridge_config:
-    description: Matterbridge configuration directory
-    value: ${{ steps.matterbridge.outputs.matterbridge_config }}
-
 runs:
   using: composite
 
@@ -39,26 +30,11 @@ runs:
       shell: bash
       run: |
         set -e
-
-        MATTERBRIDGE_DIR="$RUNNER_TEMP/matterbridge"
-        MATTERBRIDGE_CONFIG_DIR="$MATTERBRIDGE_DIR/.matterbridge"
-        MATTERBRIDGE_OPTIONS="-homedir $MATTERBRIDGE_DIR"
-
         if [[ "${{ inputs.use-matterbridge-edge }}" == "true" ]]; then
+          MATTERBRIDGE_DIR="$RUNNER_TEMP/matterbridge"
           echo "🔧 Cloning Matterbridge from GitHub to $MATTERBRIDGE_DIR..."
-          git clone --single-branch --branch edge https://github.com/Luligu/matterbridge.git "$MATTERBRIDGE_DIR"
-          cd "$MATTERBRIDGE_DIR"
-          npm ci
-          npm run build
-          ln -s "$MATTERBRIDGE_DIR" "$GITHUB_WORKSPACE/node_modules/matterbridge"
-          echo "matterbridge_cmd=node $MATTERBRIDGE_DIR/dist/cli.js $MATTERBRIDGE_OPTIONS" >> "$GITHUB_OUTPUT"
+          npm run setup-matterbridge-edge
         else
           echo "📦 Installing Matterbridge from npm..."
-          npm install -g matterbridge
-          npm link matterbridge
-          echo "matterbridge_cmd=matterbridge $MATTERBRIDGE_OPTIONS" >> "$GITHUB_OUTPUT"
+          npm run setup-matterbridge-npm
         fi
-
-        echo "📂 Creating Matterbridge configuration directory $MATTERBRIDGE_CONFIG_DIR..."
-        mkdir -p "$MATTERBRIDGE_CONFIG_DIR"
-        echo "matterbridge_config=$MATTERBRIDGE_CONFIG_DIR" >> "$GITHUB_OUTPUT"
