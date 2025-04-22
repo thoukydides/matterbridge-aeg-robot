@@ -3,12 +3,12 @@
 
 import { AnsiLogger } from 'matterbridge/logger';
 import { Config } from './config-types.js';
+import { EndpointRX9 } from './endpoint-rx9.js';
 import {
-    EndpointRX9,
     RvcCleanModeRX9,
     RvcOperationalStateRX9,
     RvcRunModeRX9
-} from './endpoint-rx9.js';
+} from './behavior-rx9.js';
 import { AEGApplianceRX9 } from './aeg-appliance-rx9.js';
 import { BabelRX9 } from './babel-rx9.js';
 import {

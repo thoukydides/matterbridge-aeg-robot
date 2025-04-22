@@ -4,7 +4,7 @@
 import { PowerSource, RvcOperationalState } from 'matterbridge/matter/clusters';
 import { RX92PowerMode, RX9BatteryStatus, RX9Dustbin, RX9RobotStatus } from './aegapi-rx9-types.js';
 import { DynamicStateRX9 } from './aeg-appliance-rx9.js';
-import { RvcRunModeRX9, RvcCleanModeRX9, RvcOperationalStateRX9 } from './endpoint-rx9.js';
+import { RvcRunModeRX9, RvcCleanModeRX9, RvcOperationalStateRX9 } from './behavior-rx9.js';
 import { RvcOperationalStateError } from './error-rx9.js';
 
 // Helper types for converting an ordered list of property names/types

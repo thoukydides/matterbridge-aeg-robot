@@ -2,7 +2,7 @@
 // Copyright © 2025 Alexander Thoukydides
 
 import { ModeBase, RvcOperationalState } from 'matterbridge/matter/clusters';
-import { VENDOR_ERROR_RX9 } from './endpoint-rx9.js';
+import { VENDOR_ERROR_RX9 } from './behavior-rx9.js';
 
 // RVC Operational State errors
 export class RvcOperationalStateError extends Error {

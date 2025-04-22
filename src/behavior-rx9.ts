@@ -9,15 +9,44 @@ import {
     RvcOperationalStateBehavior,
     RvcRunModeBehavior
 } from 'matterbridge/matter/behaviors';
-import {
-    RvcCleanModeRX9,
-    RvcOperationalStateRX9,
-    RvcRunModeRX9,
-    VENDOR_ERROR_RX9
-} from './endpoint-rx9.js';
 import { AnsiLogger } from 'matterbridge/logger';
 import { ChangeToModeError, RvcOperationalStateError } from './error-rx9.js';
 import { assertIsDefined, assertIsInstanceOf, logError } from './utils.js';
+
+// Robot Vacuum Cleaner Run Mode cluster modes
+export enum RvcRunModeRX9 {
+    Idle,
+    Cleaning
+}
+
+// Robot Vacuum Cleaner Clean Mode cluster modes
+export enum RvcCleanModeRX9 {
+    Quiet,
+    Smart,      // (not RX9.1)
+    Power,
+    QuietSpot,
+    SmartSpot,  // (not RX9.1)
+    PowerSpot
+}
+
+// Robot Vacuum Cleaner Operational State cluster operational states
+export enum RvcOperationalStateRX9 {
+    // 0x00~0x3F: General (Operational State) states
+    Stopped         = 0x00,
+    Running,
+    Paused,
+    Error,
+    // 0x40~0x7F: Derived cluster (RVC Operational State) states
+    SeekingCharger  = 0x40,
+    Charging,
+    Docked,
+    // 0x80~0xBF: Manufacturer states
+    ManualSteering  = 0x80,
+    FirmwareUpgrade
+}
+
+// OperationalStatus manufacturer error
+export const VENDOR_ERROR_RX9 = 0x80;
 
 // Endpoint commands
 export interface EndpointCommandsRX9 {
