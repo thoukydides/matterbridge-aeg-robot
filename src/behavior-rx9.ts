@@ -2,17 +2,22 @@
 // Copyright © 2025 Alexander Thoukydides
 
 import { Behavior, MaybePromise } from 'matterbridge/matter';
-//import { TlvEnum, TlvSchema } from 'matterbridge/matter/types';
+import { ClusterModel, FieldElement } from 'matterbridge/matter';
 import { ModeBase, RvcOperationalState } from 'matterbridge/matter/clusters';
 import {
     RvcCleanModeBehavior,
     RvcOperationalStateBehavior,
     RvcRunModeBehavior
 } from 'matterbridge/matter/behaviors';
-import { RvcCleanModeRX9, RvcRunModeRX9 } from './endpoint-rx9.js';
+import {
+    RvcCleanModeRX9,
+    RvcOperationalStateRX9,
+    RvcRunModeRX9,
+    VENDOR_ERROR_RX9
+} from './endpoint-rx9.js';
 import { AnsiLogger } from 'matterbridge/logger';
 import { ChangeToModeError, RvcOperationalStateError } from './error-rx9.js';
-import { logError } from './utils.js';
+import { assertIsDefined, assertIsInstanceOf, logError } from './utils.js';
 
 // Endpoint commands
 export interface EndpointCommandsRX9 {
@@ -113,6 +118,42 @@ export class RvcCleanModeServerRX9 extends RvcCleanModeBehavior {
 
 // Implement command handlers for the RVC Operational State cluster
 export class RvcOperationalStateServerRX9 extends RvcOperationalStateBehavior {
+
+    static {
+        const schema = RvcOperationalStateServerRX9.schema;
+        assertIsInstanceOf(schema, ClusterModel);
+        const extendEnum = (name: string, values: FieldElement[]): void => {
+            const element = schema.datatypes.find(e => e.name === name);
+            assertIsDefined(element);
+            element.children = [...element.children, ...values];
+        };
+
+        // Add manufacturer-specific OperationalState values
+        extendEnum('OperationalStateEnum', [
+            FieldElement({
+                name:           'ManualSteering',
+                id:             RvcOperationalStateRX9.ManualSteering,
+                conformance:    'O',
+                description:    'The device is being steered manually'
+            }),
+            FieldElement({
+                name:           'FirmwareUpgrade',
+                id:             RvcOperationalStateRX9.FirmwareUpgrade,
+                conformance:    'O',
+                description:    'The device firmware is being upgraded'
+            })
+        ]);
+
+        // Add manufacturer-specific ErrorState values
+        extendEnum('ErrorStateEnum', [
+            FieldElement({
+                name:           'OtherError',
+                id:             VENDOR_ERROR_RX9,
+                conformance:    'O',
+                description:    'The device has an error that is not covered by the Matter-defined error states'
+            })
+        ]);
+    }
 
     // Common command handler
     async command(

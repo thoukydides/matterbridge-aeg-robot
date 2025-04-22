@@ -178,15 +178,17 @@ Although the **ChangeToMode** command is defined, it will always return an error
 The **RVC Operational State Cluster** indicates the detailed robot vacuum status:
 * **OperationalState**: Indicates the current state of the robot vacuum:
 
-| Reported Status                                                                              | OperationalState |
-| -------------------------------------------------------------------------------------------- | ---------------- |
-| `Sleeping` (off dock)                                                                        | *Stopped*        |
-| `Cleaning` <br> `SpotCleaning`                                                               | *Running*        |
-| `PausedCleaning` <br> `PausedSpotCleaning` <br> `PausedReturn` <br> `PausedReturnForPitstop` | *Paused*         |
-| `Error` <br> `FirmwareUpdate` <br> `ManualSteering`                                          | *Error*          |
-| `Return` <br> `ReturnForPitstop`                                                             | *SeekingCharger* |
-| `Charging` <br> `Pitstop`                                                                    | *Charging*       |
-| `Sleeping` (on dock)                                                                         | *Docked*         |
+| Reported Status                                                                              | OperationalState                 |
+| -------------------------------------------------------------------------------------------- | -------------------------------- |
+| `Charging` <br> `Pitstop`                                                                    | *Charging*                       |
+| `Cleaning` <br> `SpotCleaning`                                                               | *Running*                        |
+| `Error`                                                                                      | *Error*                          |
+| `FirmwareUpgrade`                                                                            | *FirmwareUpgrade* (non-standard) |
+| `ManualSteering`                                                                             | *ManualSteering* (non-standard)  |
+| `PausedCleaning` <br> `PausedSpotCleaning` <br> `PausedReturn` <br> `PausedReturnForPitstop` | *Paused*                         |
+| `Return` <br> `ReturnForPitstop`                                                             | *SeekingCharger*                 |
+| `Sleeping` (off dock)                                                                        | *Stopped*                        |
+| `Sleeping` (on dock)                                                                         | *Docked*                         |
 
 * **OperationalError**: Indicates details of a non-transient problem with the robot vacuum when **OperationalState** is *Error*.
 

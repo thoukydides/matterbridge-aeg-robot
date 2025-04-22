@@ -8,6 +8,9 @@ import { IErrorDetail } from 'ts-interface-checker';
 // Milliseconds in a second
 export const MS = 1000;
 
+// A mixin class must have a constructor with a single rest parameter of type 'any[]'.ts(2545)
+export type Constructor<T = object> = new (...args: any[]) => T;
+
 // Type assertions
 export function assertIsDefined<Type>(value: Type): asserts value is NonNullable<Type> {
     assert.notStrictEqual(value, undefined);
@@ -16,7 +19,9 @@ export function assertIsDefined<Type>(value: Type): asserts value is NonNullable
 export function assertIsNotUndefined<Type>(value: Type): asserts value is Exclude<Type, undefined> {
     assert.notStrictEqual(value, undefined);
 }
-
+export function assertIsInstanceOf<Type extends object>(value: unknown, type: Constructor<Type>): asserts value is Type {
+    assert(value instanceof type, `Not an instance of ${type.name}`);
+}
 // Log an error
 export function logError(log: AnsiLogger, when: string, err: unknown): void {
     try {

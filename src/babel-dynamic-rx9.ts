@@ -35,8 +35,8 @@ const STATUS_MAP: Record<RX9RobotStatus, ExtractTypes<StatusFieldEntries>> = {
     [RX9RobotStatus.Sleeping]:                 ['Idle',     false,      'Docked'],
     [RX9RobotStatus.Error]:                    ['Idle',     false,      'Error'],
     [RX9RobotStatus.Pitstop]:                  ['Cleaning', false,      'Charging'],
-    [RX9RobotStatus.ManualSteering]:           ['Idle',     false,      'Error'],
-    [RX9RobotStatus.FirmwareUpgrade]:          ['Idle',     false,      'Error']
+    [RX9RobotStatus.ManualSteering]:           ['Idle',     false,      'ManualSteering'],
+    [RX9RobotStatus.FirmwareUpgrade]:          ['Idle',     false,      'FirmwareUpgrade']
 };
 function mapStatus(status: RX9RobotStatus): ExtractFields<StatusFieldEntries> {
     const [runMode, isSpotClean, operationalState] = STATUS_MAP[status];
@@ -153,12 +153,8 @@ export const BABEL_DYNAMIC_RX9 = {
                 operationalState = isDocked ? 'Docked' : 'Stopped';
                 break;
 
-            // Some robot states are not supported by standard Matter Operational States
-            case RX9RobotStatus.ManualSteering:     throw new Error('Manual Steering');
-            case RX9RobotStatus.FirmwareUpgrade:    throw new Error('Upgrading firmware');
-
             // Robot reporting an error, but no obvious cause
-            case RX9RobotStatus.Error:              throw new Error('Unidentified error');
+            case RX9RobotStatus.Error:      throw new Error('Unidentified error');
             }
 
             // Return the (non-error) operational state

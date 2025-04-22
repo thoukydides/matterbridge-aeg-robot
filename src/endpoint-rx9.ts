@@ -17,7 +17,6 @@ import {
     BasicInformation,
     PowerSource,
     RvcCleanMode,
-    RvcOperationalState,
     RvcRunMode
 } from 'matterbridge/matter/clusters';
 import {
@@ -81,15 +80,12 @@ export enum RvcOperationalStateRX9 {
     Charging,
     Docked,
     // 0x80~0xBF: Manufacturer states
-    // HERE - Add these after patching the schema
-    //ManualSteering  = 0x80,
-    //FirmwareUpgrade
+    ManualSteering  = 0x80,
+    FirmwareUpgrade
 }
 
 // OperationalStatus manufacturer error
-// HERE - Use 0x80 after patching the schema
-//export const VENDOR_ERROR_RX9 = 0x80;
-export const VENDOR_ERROR_RX9 = RvcOperationalState.ErrorState.UnableToCompleteOperation;
+export const VENDOR_ERROR_RX9 = 0x80;
 
 // A Matterbridge endpoint with robot vacuum cleaner clusters
 export class EndpointRX9 extends MatterbridgeEndpoint {
@@ -326,14 +322,12 @@ export class EndpointRX9 extends MatterbridgeEndpoint {
                 operationalStateId:     RvcOperationalStateRX9.Charging
             }, {
                 operationalStateId:     RvcOperationalStateRX9.Docked
-            //},
-            // HERE - Add these after modifying the schema
-            //{
-            //    operationalStateId:     RvcOperationalStateRX9.ManualSteering,
-            //    operationalStateLabel: 'Manual Steering'
-            //}, {
-            //    operationalStateId:     RvcOperationalStateRX9.FirmwareUpgrade,
-            //    operationalStateLabel: 'Firmware Upgrade'
+            }, {
+                operationalStateId:     RvcOperationalStateRX9.ManualSteering,
+                operationalStateLabel: 'Manual Steering'
+            }, {
+                operationalStateId:     RvcOperationalStateRX9.FirmwareUpgrade,
+                operationalStateLabel: 'Firmware Upgrade'
             }],
             // Variable attributes (with dummy defaults)
             operationalState:       RvcOperationalStateRX9.Stopped,

@@ -44,7 +44,9 @@ export default tseslint.config(
             'no-trailing-spaces':                               ['warn'],
             'prefer-arrow-callback':                            ['warn'],
             'quotes':                                           ['warn', 'single', { avoidEscape: true }],
-            'semi':                                             ['warn']
+            'semi':                                             ['warn'],
+            // Special rules for this project
+            '@typescript-eslint/no-explicit-any':               ['error', { ignoreRestArgs: true }]
         }
     }, {
         files: ['**/*-types.ts'],
