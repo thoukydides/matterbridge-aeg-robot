@@ -39,7 +39,7 @@ body:
       description: |
         Suggest which Matter cluster(s) from the [Matter Application Cluster Specification](https://csa-iot.org/developer-resource/specifications-download-request/) might apply.
 
-        Note: Apple Home only supports a subset of Matter clusters. The most accurate (though incomplete) information is available in [this Apple support article](https://support.apple.com/en-gb/102135). It does not yet reflect recent additions such as robot vacuums (added in iOS 18.4).
+        Note: Apple Home only supports a subset of Matter clusters. The most accurate (though somewhat out-of-date) information is available in [this Apple support article](https://support.apple.com/en-gb/102135) and [the Matter.js overview of the Matter ecosystems](https://github.com/project-chip/matter.js/blob/main/docs/ECOSYSTEMS.md).
 
         If the requested feature maps to a Matter cluster that is unsupported by Apple Home it is unlikely to be implemented, even if technically valid within Matter.
     validations:
