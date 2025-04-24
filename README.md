@@ -66,7 +66,7 @@ The `apiKey`, `accessToken`, and `refreshToken` should be obtained from the [Ele
 
 #### Advanced Configuration
 
-You can include additional settings in `config.json` to customise the behaviour or enable special debug features:
+You can include additional settings in `matterbridge-aeg-robot.config.json` to customise the behaviour or enable special debug features:
 ```JSON
 {
     "name":                   "matterbridge-aeg-robot",
