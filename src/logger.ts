@@ -29,6 +29,9 @@ const filters: [(value: string) => string, RegExp][] = [
 // A logger with filtering and support for an additional prefix
 export class PrefixLogger extends AnsiLogger {
 
+    // Log level to be used for debug messages
+    debugLevel: LogLevel = LogLevel.DEBUG;
+
     // Create a new logger
     constructor(readonly delegate: AnsiLogger, readonly prefix?: string) {
         super({
@@ -48,6 +51,9 @@ export class PrefixLogger extends AnsiLogger {
 
     // Log a message with sensitive data filtered
     override log(level: LogLevel, message: string, ...parameters: unknown[]): void {
+        // Allow debug messages to be logged as a different level
+        if (level === LogLevel.DEBUG) level = this.debugLevel;
+
         // Filter the log message and parameters
         const filteredMessage    = PrefixLogger.filterSensitive(message);
         const filteredParameters = parameters.map(p => PrefixLogger.filterSensitive(p));
@@ -60,6 +66,11 @@ export class PrefixLogger extends AnsiLogger {
         } finally {
             this.delegate.logName = savedLogName;
         }
+    }
+
+    // Log all DEBUG messages as INFO to avoid being dropped by Homebridge
+    logDebugAsInfo(): void {
+        this.debugLevel = LogLevel.INFO;
     }
 
     // Attempt to filter sensitive data within the log message

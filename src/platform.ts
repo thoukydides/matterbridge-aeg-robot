@@ -39,6 +39,7 @@ export class PlatformRX9 extends MatterbridgeDynamicPlatform {
         // Check the dependencies and configuration
         checkDependencyVersions(this);
         checkConfiguration(this.log, config);
+        if (config.debugFeatures.includes('Log Debug as Info')) prefixLog.logDebugAsInfo();
 
         // Create storage for this plugin (initialised in onStart)
         const persistDir = Path.join(this.matterbridge.matterbridgePluginDirectory, PLUGIN_NAME, 'persist');
