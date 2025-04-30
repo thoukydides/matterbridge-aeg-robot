@@ -2,8 +2,8 @@
 // Copyright © 2025 Alexander Thoukydides
 
 {
-	"name": "Matterbridge AEG Robot (Node 18)",
-	"image": "mcr.microsoft.com/devcontainers/javascript-node:18",
+	"name": "Matterbridge AEG Robot (Node 20)",
+	"image": "mcr.microsoft.com/devcontainers/javascript-node:20",
 
 	// VS Code extensions to install automatically
 	"customizations": {
@@ -34,7 +34,7 @@
 
 	// Finish setup after creating the container
 	"postCreateCommand": {
-		"install": "npm ci && npm run setup-matterbridge-edge"
+		"install": "npm run setup"
 	},
 
 	// Port forwarding configuration

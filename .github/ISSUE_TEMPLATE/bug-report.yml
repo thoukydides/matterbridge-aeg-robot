@@ -54,7 +54,7 @@ body:
         - Matterbridge version (output of `npm -g ls matterbridge` or reported in Matterbridge frontend)
       placeholder: |
         - OS: e.g. Ubuntu 24.04.1 LTS or macOS Ventura 13.5
-        - Node: e.g. v18.20.4
+        - Node: e.g. v22.15.0
         - Matterbridge: e.g. 3.0.0
     validations:
       required: true

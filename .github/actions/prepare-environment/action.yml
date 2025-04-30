@@ -4,12 +4,7 @@ inputs:
   node-version:
     description: Node.js version to use
     required: false
-    default: 18.x
-
-  use-matterbridge-edge:
-    description: If true, clone Matterbridge from GitHub edge branch
-    required: false
-    default: 'true'
+    default: 20.x
 
 runs:
   using: composite
@@ -23,17 +18,4 @@ runs:
 
     - name: Install project dependencies
       shell: bash
-      run: npm ci
-
-    - name: Setup Matterbridge (${{ inputs.use-matterbridge-edge == 'true' && 'edge' || 'npm' }})
-      id: matterbridge
-      shell: bash
-      run: |
-        set -e
-        if [[ "${{ inputs.use-matterbridge-edge }}" == "true" ]]; then
-          echo "🔧 Cloning Matterbridge from GitHub..."
-          MATTERBRIDGE_DIR="$RUNNER_TEMP/matterbridge" npm run setup-matterbridge-edge
-        else
-          echo "📦 Installing Matterbridge from npm..."
-          npm run setup-matterbridge-npm
-        fi
+      run: npm run setup
