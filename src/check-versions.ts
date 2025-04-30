@@ -25,7 +25,7 @@ export function checkDependencyVersions(platform: MatterbridgeDynamicPlatform): 
         } else if (semver.satisfies(semverCurrent, required)) {
             log.info(`${name} version ${current} (satisfies ${required})`);
         } else {
-            log.error(`${name} version ${current} is incompatible (satisfies ${required})`);
+            log.error(`${name} version ${current} is incompatible (require ${required})`);
         }
     });
 }
