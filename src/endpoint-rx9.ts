@@ -2,7 +2,6 @@
 // Copyright © 2025 Alexander Thoukydides
 
 import {
-    AtLeastOne,
     bridgedNode,
     DeviceTypeDefinition,
     MatterbridgeEndpoint,
@@ -34,6 +33,7 @@ import { AnsiLogger } from 'matterbridge/logger';
 import { PLUGIN_URL } from './settings.js';
 import { Config } from './config-types.js';
 import { RvcOperationalStateError } from './error-rx9.js';
+import { AtLeastOne } from 'matterbridge/matter';
 
 // Device-specific endpoint configuration
 export interface EndpointInformationRX9 {
