@@ -1,7 +1,7 @@
 {
     "name": "matterbridge-aeg-robot",
     "displayName": "Matterbridge AEG RX9 / Electrolux Pure i9 Robot Vacuum",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "description": "Matterbridge AEG Robot",
     "license": "ISC",
     "keywords": [
