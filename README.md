@@ -10,7 +10,8 @@
 [![npm](https://badgen.net/npm/dw/matterbridge-aeg-robot)](https://www.npmjs.com/package/matterbridge-aeg-robot)
 [![Build and Lint](https://github.com/thoukydides/matterbridge-aeg-robot/actions/workflows/build.yml/badge.svg)](https://github.com/thoukydides/matterbridge-aeg-robot/actions/workflows/build.yml)
 
-A [Matterbridge](https://github.com/Luligu/matterbridge) plugin that connects [AEG RX 9](https://www.aeg.co.uk/wellbeing/discover/rx9) / [Electrolux Pure i9](https://www.electroluxgroup.com/en/electrolux-launches-pure-i9-robotic-vacuum-in-the-united-states-24513/) robot vacuums to the [Matter](https://csa-iot.org/all-solutions/matter/) smart home ecosystem.
+A [Matterbridge](https://github.com/Luligu/matterbridge) plugin that connects [AEG RX 9](https://www.aeg.co.uk/wellbeing/discover/rx9) / [Electrolux Pure i9](https://www.electroluxgroup.com/en/electrolux-launches-pure-i9-robotic-vacuum-in-the-united-states-24513/) robot vacuums  
+to the [Matter](https://csa-iot.org/all-solutions/matter/) smart home ecosystem.
 
 </div>
 
@@ -46,7 +47,7 @@ AEG, Electrolux, and Zanussi are trademarks of [AB Electrolux](https://www.elect
 Each additional Matterbridge instance should specify the following command line options:
 
 | Command Line Options    | Default                     | Description
-| ----------------------- | --------------------------- | --
+| ----------------------- | --------------------------- | ---
 | `-homedir <directory>`  | `$HOME` or `USERPROFILE`    | Matterbridge defaults to creating `Matterbridge`, `.matterbridge`, and `.mattercert` directories within the user's home directory. A different "home" directory is required by each Matterbridge instance.
 | `-port <number>`        | `5540`                      | The port number for the Matterbridge commissioning server. This should be unique for each instance to allow pairing with a Matter controller.
 | `-frontend <number>`    | `8283`                      | The port number for the Matterbridge frontend. This should be unique for each instance to allow use of the web interface.
@@ -155,13 +156,16 @@ All supported robot vacuums associated with the account (those reporting a model
 The API has a strict [rate limit](https://developer.electrolux.one/documentation/quotasAndRateLimits) of 5000 calls/day. The default value is 30 seconds, which results in 2880 calls/day for polling the state of a single appliance. If you have multiple robot vacuum cleaners in your account, or use the same API Key for other purposes, then scale the value appropriately: 60 seconds for two, 90 seconds for three, etc. More rapid polling is performed for a short period after a command has been sent to the robot vacuum; this is not configurable.
 
 The supported `debugFeatures` are:
-- `Run API Tests`: Performs a test of each idempotent Electrolux Group API endpoint (those just reading appliance information and status) once during plugin start-up. This is useful for detecting changes to the API implementation that may affect operation of this plugin.
-- `Run Unsafe API Tests`: If `Run API Tests` is set then this additionally tests non-idempotent API endpoints (a `home` command is issued).
-- `Log Endpoint Debug`: Sets the `debug` flag to the Matterbridge/Matter.js endpoint implementation.
-- `Log API Headers`: Logs HTTP headers for each Electrolux Group API request. Rarely useful. (Requires *Debug* level logging.)
-- `Log API Bodies`: Logs message bodies for each Electrolux Group API request. Useful for diagnosing interoperability issues. (Requires *Debug* level logging.)
-- `Log Appliance IDs`: Product identifier and serial numbers are automatically redacted in the log by default. This setting causes these values to be logged verbatim.
-- `Log Debug as Info`: Redirect *Debug* level logging to *Info* level. This makes it visible in the Matterbridge frontend.
+
+| Debug Feature          | Description
+| ---------------------- | ---
+| `Run API Tests`        | Performs a test of each idempotent Electrolux Group API endpoint (those just reading appliance information and status) once during plugin start-up. This is useful for detecting changes to the API implementation that may affect operation of this plugin.
+| `Run Unsafe API Tests` | If `Run API Tests` is set then this additionally tests non-idempotent API endpoints (a `home` command is issued).
+| `Log Endpoint Debug`   | Sets the `debug` flag to the Matterbridge/Matter.js endpoint implementation.
+| `Log API Headers`      | Logs HTTP headers for each Electrolux Group API request. Rarely useful. (Requires *Debug* level logging.)
+| `Log API Bodies`       | Logs message bodies for each Electrolux Group API request. Useful for diagnosing interoperability issues. (Requires *Debug* level logging.)
+| `Log Appliance IDs`    | Product identifier and serial numbers are automatically redacted in the log by default. This setting causes these values to be logged verbatim.
+| `Log Debug as Info`    | Redirect *Debug* level logging to *Info* level. This makes it visible in the Matterbridge frontend.
 
 </details>
 
