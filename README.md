@@ -10,7 +10,7 @@
 [![npm](https://badgen.net/npm/dw/matterbridge-aeg-robot)](https://www.npmjs.com/package/matterbridge-aeg-robot)
 [![Build and Lint](https://github.com/thoukydides/matterbridge-aeg-robot/actions/workflows/build.yml/badge.svg)](https://github.com/thoukydides/matterbridge-aeg-robot/actions/workflows/build.yml)
 
-AEG RX 9 / Electrolux Pure i9 robot vacuum plugin for [Matterbridge](https://github.com/Luligu/matterbridge).
+A [Matterbridge](https://github.com/Luligu/matterbridge) plugin that connects [AEG RX 9](https://www.aeg.co.uk/wellbeing/discover/rx9) / [Electrolux Pure i9](https://www.electroluxgroup.com/en/electrolux-launches-pure-i9-robotic-vacuum-in-the-united-states-24513/) robot vacuums to the [Matter](https://csa-iot.org/all-solutions/matter/) smart home ecosystem.
 
 </div>
 
@@ -29,68 +29,139 @@ AEG, Electrolux, and Zanussi are trademarks of [AB Electrolux](https://www.elect
 
 ### Step 3 - Matterbridge Plugin Installation
 
-#### Recommended Approach using Matterbridge Frontend
-
 1. Open the Matterbridge web interface, e.g. at http://localhost:8283/.
-1. Under *Install plugins* type `matterbridge-aeg-robot` in the *Plugin name or plugin path* search box, and click *Install ⬇️*.
-1. Click *🔄 Restart Matterbridge*.
-1. Open the **matterbridge-aeg-robot** *⚙️ Plugin config* and set the *API Key*, *Access Token*, and *Refresh Token* to the values obtained from the [Electrolux Group Developer Portal Dashboard](https://developer.electrolux.one/dashboard).
-1. Click *CONFIRM* to save the plugin configuration and restart Matterbridge again.
+1. Under *Install plugins* type `matterbridge-aeg-robot` in the *Plugin name or plugin path* search box, then click *Install ⬇️*.
+1. Click *🔄 Restart Matterbridge* to apply the change.
+1. Open the **matterbridge-aeg-robot** *⚙️ Plugin config*.
+1. Set the *API Key*, *Access Token*, and *Refresh Token* to the values obtained from the [Electrolux Group Developer Portal Dashboard](https://developer.electrolux.one/dashboard).
+1. Click <kbd>CONFIRM</kbd> to save the configuration and restart Matterbridge again.
+> [!WARNING]
+> The Apple Home app only supports robot vacuums when they are standalone individually-paired Matter nodes. Attempting to pair a Matterbridge instance with multiple robot vacuums, or a robot vacuum plus other device types, can cause the Home app to crash or fail to properly recognise some of the devices. If you are using HomeKit with a robot vacuum then configure a separate Matterbridge instance for each robot vacuum.
 
 <details>
-<summary>Alternative method using command line (and advanced configuration)</summary>
+<summary>Separate Matterbridge Instance per Robot Vacuum</summary>
 
-#### Installation using Command Line
+### Separate Matterbridge Instances
 
+Each additional Matterbridge instance should specify the following command line options:
+
+| Command Line Options    | Default                     | Description
+| ----------------------- | --------------------------- | --
+| `-homedir <directory>`  | `$HOME` or `USERPROFILE`    | Matterbridge defaults to creating `Matterbridge`, `.matterbridge`, and `.mattercert` directories within the user's home directory. A different "home" directory is required by each Matterbridge instance.
+| `-port <number>`        | `5540`                      | The port number for the Matterbridge commissioning server. This should be unique for each instance to allow pairing with a Matter controller.
+| `-frontend <number>`    | `8283`                      | The port number for the Matterbridge frontend. This should be unique for each instance to allow use of the web interface.
+| `-vendorName "<name>"`  | `"Matterbridge"`            | Apple Home uses the vendor name of the Matter bridge for robot vacuums; use this option to override Matterbridge's default with `AEG`.
+| `-productName "<name>"` | `"Matterbridge aggregator"` | Apple Home uses the product name of the Matter bridge for robot vacuums; use this option to override Matterbridge's default with model name of your robot vacuum.
+
+If you have multiple AEG/Electrolux robot vacuums then select one for each instance using the `whiteList` plugin configuration option.
+
+#### Example `systemd` Configuration
+
+The following example assumes that:
+* `systemd` is being used to launch Matterbridge (instead of via Docker or other means).
+* Matterbridge is run as user `matterbridge` and group `matterbridge`.
+* Matterbridge configuration files for this instance are being kept under `/var/lib/matterbridge-aeg-robot`.
+* The commissioning server will be on port `5541` and the web frontend on port `8284`.
+* This instance is for an AEG RX9.2 robot vacuum.
+
+Modify as appropriate to suit your setup.
+
+1. Create a directory for this instance's configuration files:
+   ```shell
+   sudo mkdir /var/lib/matterbridge-aeg-robot
+   sudo chown matterbridge:matterbridge /var/lib/matterbridge-aeg-robot
+   ```
+1. Create a `/etc/systemd/system/matterbridge-aeg-robot.service` file containing:
+   ```ini
+   [Unit]
+   Description=Matterbridge AEG Robot
+   After=network-online.target
+   
+   [Service]
+   Type=simple
+   ExecStart=/usr/local/bin/matterbridge -service -nosudo -novirtual -homedir /var/lib/matterbridge-aeg-robot -port 5541 -frontend 8284 -vendorName 'AEG' -productName 'RX9.2'
+   WorkingDirectory=/var/lib/matterbridge-aeg-robot
+   StandardOutput=inherit
+   StandardError=inherit
+   Restart=always
+   RestartSec=10s
+   TimeoutStopSec=30s
+   User=matterbridge
+   Group=matterbridge
+   
+   [Install]
+   WantedBy=multi-user.target
+   ```
+1. Reload the `systemd` service files and enable the new unit:
+   ```shell
+   sudo systemctl daemon-reload
+   sudo systemctl enable --now matterbridge-aeg-robot.service
+   ```
+</details>
+<details>
+<summary>Command Line Installation</summary>
+
+### Installation using Command Line
 1. Stop Matterbridge:  
-   `systemctl stop matterbridge`
+   `sudo systemctl stop matterbridge`
 1. Install the plugin:  
    `npm install -g matterbridge-aeg-robot`
 1. Register it with Matterbridge:  
-   `matterbridge -add matterbridge-aeg-robot`
+   `sudo -u matterbridge matterbridge -add matterbridge-aeg-robot`
 1. Restart Matterbridge:  
-   `systemctl start matterbridge`
+   `sudo systemctl start matterbridge`
 
 #### Example `matterbridge-aeg-robot.config.json`
 ```JSON
 {
-    "apiKey":                 "<API Key>",
-    "accessToken":            "<Authorization Access Token>",
-    "refreshToken":           "<Authorization Refresh Token>"
+    "name":                     "matterbridge-aeg-robot",
+    "type":                     "DynamicPlatform",
+    "version":                  "1.0.0",
+    "apiKey":                   "<API Key>",
+    "accessToken":              "<Authorization Access Token>",
+    "refreshToken":             "<Authorization Refresh Token>",
+    "pollIntervalSeconds":      30,
+    "blackList":                [],
+    "whiteList":                [],
+    "debug":                    false,
+    "debugFeatures":            [],
+    "unregisterOnShutdown":     false
 }
 ```
 
-The `apiKey`, `accessToken`, and `refreshToken` should be obtained from the [Electrolux Group Developer Portal Dashboard](https://developer.electrolux.one/dashboard). All supported robot vacuums associated with the account (those reporting a model name of `PUREi9`) will be added to Matterbridge. Unsupported appliances, such as air purifiers or RX8 robot vacuums, will be ignored.
+</details>
+<details>
+<summary>Advanced Configuration Options</summary>
 
-#### Advanced Configuration
+### Advanced Configuration
 
 You can include additional settings in `matterbridge-aeg-robot.config.json` to customise the behaviour or enable special debug features:
-```JSON
-{
-    "name":                   "matterbridge-aeg-robot",
-    "type":                   "DynamicPlatform",
-    "version":                "1.0.0",
-    "whiteList":              ["WALL·E"],
-    "blackList":              [],
-    "apiKey":                 "<API Key>",
-    "accessToken":            "<Authorization Access Token>",
-    "refreshToken":           "<Authorization Refresh Token>",
-    "pollIntervalsSeconds":   30,
-    "debug":                  false,
-    "debugFeatures":          ["Run API Tests", "Run Unsafe API Tests", "Log Endpoint Debug", "Log API Headers", "Log API Bodies", "Log Appliance IDs"],
-    "unregisterOnShutdown":   false
-}
-```
 
-The `name`, `type`, and `version`, are all set by Matterbridge to match the plugin.
+| Key                     | Default            | Description
+| ----------------------- | ------------------ | ---
+| `name`<br>`type`<br>`version` | n/a          | These are managed by Matterbridge and do not need to be set manually.
+| `apiKey`                | (no default)       | *API Key* obtained from the [Electrolux Group Developer Portal Dashboard](https://developer.electrolux.one/dashboard).
+| `accessToken`           | (no default)       | *Access Token* obtained from the [Electrolux Group Developer Portal Dashboard](https://developer.electrolux.one/dashboard).
+| `refreshToken`          | (no default)       | *Refresh Token* obtained from the [Electrolux Group Developer Portal Dashboard](https://developer.electrolux.one/dashboard).
+| `pollIntervalSeconds`   | `30`               | The time in seconds between successive polls of the Electrolux Group API for each robot vacuum.
+| `blackList`             | `[]`               | If the list is not empty, then any robot vacuums with matching names will not be exposed as Matter devices.
+| `whiteList`             | `[]`               | If the list is not empty, then only robot vacuums with matching names (and not on the `blacklist`) will be exposed as Matter devices.
+| `debug`                 | `false`            | Sets the logger level for this plugin to *Debug*, overriding the global Matterbridge logger level setting.
+| `debugFeatures`         | `[]`               | Miscellaneous options to control the information logged. None of these should be set unless you are investigating a compatibility issue or other problem.
+| `unregisterOnShutdown`  | `false`            | Unregister all exposed devices on shutdown. This is used during development and testing; do not set it for normal use.
 
-`blackList` and `whiteList` control which robot vacuums are exposed as Matter devices. If `blacklist` is not empty, then any appliance names listed will be excluded. If `whitelist` is not empty, then only appliance names on that list (and not on the `blacklist`) will be included.
+All supported robot vacuums associated with the account (those reporting a model name of `PUREi9`) will be added to Matterbridge. Unsupported appliances, such as air purifiers or RX8 robot vacuums, will be ignored. Exclude or include specific robot vacuums by listing the names assigned in the AEG app in either the `blackList` or `whiteList`.
 
-The `pollIntervalSeconds` specifies the time in seconds between successive polls of the Electrolux Group API. The API has a strict [rate limit](https://developer.electrolux.one/documentation/quotasAndRateLimits) of 5000 calls/day. The default value is 30 seconds, which results in 2880 calls/day for polling the state of a single appliance. If you have multiple robot vacuum cleaners in your account, or use the same API Key for other purposes, then scale the value appropriately: 60 seconds for two, 90 seconds for three, etc. More rapid polling is performed for a short period after a command has been sent to the robot vacuum; this is not configurable.
+The API has a strict [rate limit](https://developer.electrolux.one/documentation/quotasAndRateLimits) of 5000 calls/day. The default value is 30 seconds, which results in 2880 calls/day for polling the state of a single appliance. If you have multiple robot vacuum cleaners in your account, or use the same API Key for other purposes, then scale the value appropriately: 60 seconds for two, 90 seconds for three, etc. More rapid polling is performed for a short period after a command has been sent to the robot vacuum; this is not configurable.
 
-Setting the `debug` option sets the logger level for this plugin to *Debug*, overriding the global Matterbridge logger level setting.
-
-The `Log Appliance IDs` option prevents redaction of appliance Product ID and Serial Number values in the log. Avoid setting `debug` or any other `debugFeatures` unless you are investigating a compatibility issue, API error, or other problem.
+The supported `debugFeatures` are:
+- `Run API Tests`: Performs a test of each idempotent Electrolux Group API endpoint (those just reading appliance information and status) once during plugin start-up. This is useful for detecting changes to the API implementation that may affect operation of this plugin.
+- `Run Unsafe API Tests`: If `Run API Tests` is set then this additionally tests non-idempotent API endpoints (a `home` command is issued).
+- `Log Endpoint Debug`: Sets the `debug` flag to the Matterbridge/Matter.js endpoint implementation.
+- `Log API Headers`: Logs HTTP headers for each Electrolux Group API request. Rarely useful. (Requires *Debug* level logging.)
+- `Log API Bodies`: Logs message bodies for each Electrolux Group API request. Useful for diagnosing interoperability issues. (Requires *Debug* level logging.)
+- `Log Appliance IDs`: Product identifier and serial numbers are automatically redacted in the log by default. This setting causes these values to be logged verbatim.
+- `Log Debug as Info`: Redirect *Debug* level logging to *Info* level. This makes it visible in the Matterbridge frontend.
 
 </details>
 
@@ -207,19 +278,26 @@ This plugin has only been tested with a single AEG RX9.2 robot vacuum (model `RX
 
 Matter controllers vary in their support for Matter 1.4 RVCs. This plugin is only tested with Apple HomeKit and the Apple Home app.
 
-### Apple HomeKit Limitations
+<details>
+<summary>Apple Home Limitations</summary>
 
-The Apple Home app expects each robot vacuum to be a standalone, individually-paired Matter node implementing a single endpoint. However, Matterbridge acts as a Matter bridge - either a single bridge node for all plugins (*bridge* mode), or a separate bridge node per plugin (*childbridge* mode) - with each plugin’s device exposed as an additional child endpoint. This causes a few issues when using this plugin with the Home app:
-* **One robot vacuum per Matterbridge instance:** A separate Matterbridge instance is required for each robot vacuum. Each must use unique port numbers (both `-port <port>` and `-frontend <port>`) and their own home directory (`-homedir <path>`). This plugin should be the only one enabled in each instance. If your account contains multiple robot vacuums, use the `whitelist` setting to select one per instance.
-* **Device-specific information is ignored:** The Home app shows the bridge device information from Matterbridge’s own root **Device Basic Information** cluster, ignoring the plugin’s **Bridged Device Basic Information** cluster. As a result, the Home app displays the bridge’s name, manufacturer, model, serial number, and firmware version; *not* those of the robot vacuum.
+### Robot Vacuums in Apple Home App
+
+The Apple Home app in iOS/iPadOS 18.4 and macOS Sequoia has limited Matter support and exhibits multiple idiosyncrasies.
+
+The Home app expects each robot vacuum to be a standalone, individually-paired Matter node implementing a single endpoint. However, Matterbridge acts as a Matter bridge - either a single bridge node for all plugins (*bridge* mode), or a separate bridge node per plugin (*childbridge* mode) - with each plugin's device exposed as an additional child endpoint. This causes a few issues when using this plugin with the Home app:
+* **Multiple bridged devices:** A Matter bridge that exposes a robot vacuum plus other devices can crash the Home app. Hence, a separate Matterbridge instance is required for each robot vacuum. This plugin should be the only one enabled in each instance, and only a single robot vacuum device should be configured in each instance.
+* **Device-specific information is ignored:** The Home app shows the bridge device information from Matterbridge's own root **Device Basic Information** cluster, ignoring the plugin's **Bridged Device Basic Information** cluster. As a result, the Home app displays the bridge's name, manufacturer, model, serial number, and firmware version; *not* those of the robot vacuum. The correct values can be specified using Matterbridge's command line options.
 
 Other quirks in the Home app:
 * **Delayed docking:** The *Send to Dock* button first sets **RVC Run Mode** to *Idle* (which maps to `stop` in the Electrolux Group API), followed by a **GoHome** command (`home`). The Electrolux Group API silently ignores commands sent too quickly in succession, so this plugin inserts a 5-second delay between them. This causes the robot vacuum to pause briefly before returning to the dock.
-* **Incorrect clean mode display:** The Home app displays ModeTag values (e.g. *Deep Clean*, *Quick*) rather than the advertised modes (*Smart*, *PowerSpot*, etc) reported by the vacuum. Worse, it only shows these when not cleaning, even though the Electrolux Group API only provides meaningful values during cleaning.
+* **Incorrect RVC Clean Mode display:** The Home app displays ModeTag values (e.g. *Deep Clean*, *Quick*) rather than the advertised modes (*Smart*, *PowerSpot*, etc) reported by the robot vacuum. Worse, it only shows these when not cleaning, even though the Electrolux Group API only provides meaningful values during cleaning.
+
+</details>
 
 ## Changelog
 
-All notable changes to this project are documented in the [CHANGELOG.md](CHANGELOG.md) file.
+All notable changes to this project are documented in [CHANGELOG.md](CHANGELOG.md).
 
 ## Reporting Issues
           
