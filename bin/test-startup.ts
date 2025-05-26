@@ -21,11 +21,18 @@ const PLUGIN_CONFIG_CONTENT: Partial<Config> = {
     ]
 };
 
-// Log messages indicating success
-const SUCCESS_TESTS: { name: string, regexp: RegExp }[] = [
+// Log messages indicating success or failure
+interface Test {
+    name:   string,
+    regexp: RegExp
+}
+const SUCCESS_TESTS: Test[] = [
     { name: 'API Tests',    regexp: /\[AEG Robot\] All \d+ API tests passed/ },
     { name: 'Registered',   regexp: /\[AEG Robot\] Registered [1-9]\d* robot vacuum device/ },
     { name: 'Configured',   regexp: /\[AEG Robot\] Configured [1-9]\d* robot vacuum device/ }
+];
+const FAILURE_TESTS: Test[] = [
+    { name: 'API Checker',  regexp: / (GET|PUT|POST) \// }
 ];
 
 // Match ANSI colour codes so that they can be stripped
@@ -66,6 +73,7 @@ async function testPlugin(): Promise<void> {
 
     // Monitor stdout and stderr until they close
     let remainingTests = SUCCESS_TESTS;
+    let failureTest: Test | undefined;
     const testOutputStream = async (
         child: ChildProcessWithoutNullStreams,
         streamName: 'stdout' | 'stderr'
@@ -76,8 +84,9 @@ async function testPlugin(): Promise<void> {
             assert(typeof chunk === 'string');
             rawOutput += chunk.toString();
 
-            // Check for all of the expected log messages
+            // Check for any of the success or failure log messages
             const cleanChunk = chunk.toString().replace(ANSI_ESCAPE, '');
+            failureTest ??= FAILURE_TESTS.find(({ regexp }) => regexp.test(cleanChunk));
             remainingTests = remainingTests.filter(({ regexp }) => !regexp.test(cleanChunk));
             if (remainingTests.length === 0) child.kill('SIGTERM');
         }
@@ -90,6 +99,9 @@ async function testPlugin(): Promise<void> {
     // Check whether the test was successful
     if (child.exitCode !== null) {
         throw new Error(`Process exited with code ${child.exitCode}`);
+    }
+    if (failureTest) {
+        throw new Error(`Process terminated with test failure: ${failureTest.name}`);
     }
     if (remainingTests.length) {
         const failures = remainingTests.map(t => t.name).join(', ');
