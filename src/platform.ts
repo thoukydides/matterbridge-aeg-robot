@@ -16,7 +16,7 @@ import { DeviceRX9 } from './device-rx9.js';
 import { PrefixLogger } from './logger.js';
 import { AEGAccount } from './aeg-account.js';
 import { logError, plural } from './utils.js';
-import { PLUGIN_NAME } from './settings.js';
+import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js';
 
 // A Matterbridge AEG RX 9 / Electrolux Pure i9 platform
 export class PlatformRX9 extends MatterbridgeDynamicPlatform {
@@ -32,6 +32,7 @@ export class PlatformRX9 extends MatterbridgeDynamicPlatform {
 
     // Constructor
     constructor(matterbridge: Matterbridge, log: AnsiLogger, config: PlatformConfig) {
+        log.logName = PLATFORM_NAME;
         const prefixLog = new PrefixLogger(log);
         prefixLog.info(`Initialising platform ${PLUGIN_NAME}`);
         super(matterbridge, prefixLog, config);
