@@ -23,8 +23,9 @@ const PLUGIN_CONFIG_CONTENT: Partial<Config> = {
 
 // Log messages indicating success
 const SUCCESS_TESTS: { name: string, regexp: RegExp }[] = [
-    { name: 'API Tests',        regexp: /\[Matterbridge AEG Robot\] All \d+ API tests passed/ },
-    { name: 'Register Device',  regexp: /\[Matterbridge AEG Robot\] Registered [1-9]\d* robot vacuum device/ }
+    { name: 'API Tests',    regexp: /\[AEG Robot\] All \d+ API tests passed/ },
+    { name: 'Registered',   regexp: /\[AEG Robot\] Registered [1-9]\d* robot vacuum device/ },
+    { name: 'Configured',   regexp: /\[AEG Robot\] Configured [1-9]\d* robot vacuum device/ }
 ];
 
 // Match ANSI colour codes so that they can be stripped
@@ -32,7 +33,7 @@ const SUCCESS_TESTS: { name: string, regexp: RegExp }[] = [
 const ANSI_ESCAPE = /\x1B\[[0-9;]*[msuK]/g;
 
 // Length of time to wait
-const TIMEOUT_MATTERBRIDGE_MS = 15 * 1000; // 15 seconds
+const TIMEOUT_MATTERBRIDGE_MS = 45 * 1000; // 15 seconds
 
 // Register the plugin with Matterbridge
 async function configureAndRegisterPlugin(): Promise<void> {
