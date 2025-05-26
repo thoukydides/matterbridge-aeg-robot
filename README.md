@@ -9,6 +9,7 @@
 [![npm](https://badgen.net/npm/dt/matterbridge-aeg-robot)](https://www.npmjs.com/package/matterbridge-aeg-robot)
 [![npm](https://badgen.net/npm/dw/matterbridge-aeg-robot)](https://www.npmjs.com/package/matterbridge-aeg-robot)
 [![Build and Lint](https://github.com/thoukydides/matterbridge-aeg-robot/actions/workflows/build.yml/badge.svg)](https://github.com/thoukydides/matterbridge-aeg-robot/actions/workflows/build.yml)
+[![Test](https://github.com/thoukydides/matterbridge-aeg-robot/actions/workflows/test.yml/badge.svg)](https://github.com/thoukydides/matterbridge-aeg-robot/actions/workflows/test.yml)
 
 A [Matterbridge](https://github.com/Luligu/matterbridge) plugin that connects [AEG RX 9](https://www.aeg.co.uk/wellbeing/discover/rx9) / [Electrolux Pure i9](https://www.electroluxgroup.com/en/electrolux-launches-pure-i9-robotic-vacuum-in-the-united-states-24513/) robot vacuums  
 to the [Matter](https://csa-iot.org/all-solutions/matter/) smart home ecosystem.
@@ -145,13 +146,13 @@ You can include additional settings in `matterbridge-aeg-robot.config.json` to c
 | `accessToken`           | (no default)       | *Access Token* obtained from the [Electrolux Group Developer Portal Dashboard](https://developer.electrolux.one/dashboard).
 | `refreshToken`          | (no default)       | *Refresh Token* obtained from the [Electrolux Group Developer Portal Dashboard](https://developer.electrolux.one/dashboard).
 | `pollIntervalSeconds`   | `30`               | The time in seconds between successive polls of the Electrolux Group API for each robot vacuum.
-| `blackList`             | `[]`               | If the list is not empty, then any robot vacuums with matching names will not be exposed as Matter devices.
-| `whiteList`             | `[]`               | If the list is not empty, then only robot vacuums with matching names (and not on the `blacklist`) will be exposed as Matter devices.
+| `blackList`             | `[]`               | If the list is not empty, then any robot vacuums with matching serial numbers will not be exposed as Matter devices.
+| `whiteList`             | `[]`               | If the list is not empty, then only robot vacuums with matching serial numbers (and not on the `blacklist`) will be exposed as Matter devices.
 | `debug`                 | `false`            | Sets the logger level for this plugin to *Debug*, overriding the global Matterbridge logger level setting.
 | `debugFeatures`         | `[]`               | Miscellaneous options to control the information logged. None of these should be set unless you are investigating a compatibility issue or other problem.
 | `unregisterOnShutdown`  | `false`            | Unregister all exposed devices on shutdown. This is used during development and testing; do not set it for normal use.
 
-All supported robot vacuums associated with the account (those reporting a model name of `PUREi9`) will be added to Matterbridge. Unsupported appliances, such as air purifiers or RX8 robot vacuums, will be ignored. Exclude or include specific robot vacuums by listing the names assigned in the AEG app in either the `blackList` or `whiteList`.
+All supported robot vacuums associated with the account (those reporting a model name of `PUREi9`) will be added to Matterbridge. Unsupported appliances, such as air purifiers or RX8 robot vacuums, will be ignored. Exclude or include specific robot vacuums by listing their serial numbers in either the `blackList` or `whiteList`.
 
 The API has a strict [rate limit](https://developer.electrolux.one/documentation/quotasAndRateLimits) of 5000 calls/day. The default value is 30 seconds, which results in 2880 calls/day for polling the state of a single appliance. If you have multiple robot vacuum cleaners in your account, or use the same API Key for other purposes, then scale the value appropriately: 60 seconds for two, 90 seconds for three, etc. More rapid polling is performed for a short period after a command has been sent to the robot vacuum; this is not configurable.
 
@@ -301,7 +302,7 @@ Other quirks in the Home app:
 
 ## Changelog
 
-All notable changes to this project are documented in [CHANGELOG.md](CHANGELOG.md).
+All notable changes to this project are documented in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Reporting Issues
           
@@ -309,7 +310,7 @@ If you have discovered an issue or have an idea for how to improve this project,
 
 ### Pull Requests
 
-This project does **NOT** accept pull requests. Any PRs submitted will be closed without discussion. For more details refer to the [`CONTRIBUTING.md`](https://github.com/thoukydides/.github/blob/master/CONTRIBUTING.md) file.
+As explained in [`CONTRIBUTING.md`](https://github.com/thoukydides/.github/blob/master/CONTRIBUTING.md), this project does **NOT** accept pull requests. Any PRs submitted will be closed without discussion.
 
 ## ISC License (ISC)
 

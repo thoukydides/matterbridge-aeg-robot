@@ -20,26 +20,6 @@
             "readOnly": true,
             "ui:widget": "hidden"
         },
-        "whiteList": {
-            "description": "Only expose devices listed here. Leave empty to expose all devices.",
-            "type": "array",
-            "items": {
-                "type": "string"
-            },
-            "uniqueItems": true,
-            "selectFrom": "name",
-            "default": []
-        },
-        "blackList": {
-            "description": "Exclude any devices listed here. Leave empty to allow all devices.",
-            "type": "array",
-            "items": {
-                "type": "string"
-            },
-            "uniqueItems": true,
-            "selectFrom": "name",
-            "default": []
-        },
         "apiKey": {
             "description": "API Key obtained from the Electrolux Group Developer Portal Dashboard.",
             "type": "string"
@@ -58,11 +38,31 @@
             "type": "string"
         },
         "pollIntervalSeconds": {
-            "description": "How often each robot is polled for status (recommend 30s for one robot, 60s for two, 90s for three, etc).",
+            "description": "How often each robot vacuum is polled for status. The recommended value depends on the number of devices being polled, e.g. 30s for a single robot vacuum, increasing to 60s for two, 90s for three, etc.",
             "type": "integer",
             "default": 30,
             "minimum": 20,
             "maximum": 600
+        },
+        "whiteList": {
+            "description": "Only expose robot vacuum devices listed here, identified by their serial number. Leave empty to expose all devices.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "uniqueItems": true,
+            "selectFrom": "serial",
+            "default": []
+        },
+        "blackList": {
+            "description": "Exclude any robot vacuum devices listed here, identified by their serial number. Leave empty to expose all devices.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "uniqueItems": true,
+            "selectFrom": "serial",
+            "default": []
         },
         "debug": {
             "description": "Capture debug-level logging from this plugin, overriding the Matterbridge global log level setting.",
@@ -70,7 +70,7 @@
             "default": false
         },
         "debugFeatures": {
-            "description": "Enable advanced debug options. Only use when diagnosing specific issues.",
+            "description": "Advanced diagnostics: Enable only for troubleshooting or development.",
             "type": "array",
             "uniqueItems": true,
             "items": {

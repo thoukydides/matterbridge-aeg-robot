@@ -87,7 +87,7 @@ export class PlatformRX9 extends MatterbridgeDynamicPlatform {
                 this.setSelectDevice(serialNumber, applianceName, undefined, 'hub');
 
                 // Register the device unless blocked by the black/white lists
-                if (this.validateDevice(applianceName)) {
+                if (this.validateDevice(serialNumber)) {
                     await this.registerDevice(device);
                     this.devices.push(device);
                 }
