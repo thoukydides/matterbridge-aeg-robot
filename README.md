@@ -16,8 +16,6 @@ to the [Matter](https://csa-iot.org/all-solutions/matter/) smart home ecosystem.
 
 </div>
 
-AEG, Electrolux, and Zanussi are trademarks of [AB Electrolux](https://www.electroluxgroup.com/).
-
 ## Installation
 
 ### Step 1 - Create Account and Setup Robot Vacuum
@@ -37,8 +35,10 @@ AEG, Electrolux, and Zanussi are trademarks of [AB Electrolux](https://www.elect
 1. Open the **matterbridge-aeg-robot** *⚙️ Plugin config*.
 1. Set the *API Key*, *Access Token*, and *Refresh Token* to the values obtained from the [Electrolux Group Developer Portal Dashboard](https://developer.electrolux.one/dashboard).
 1. Click <kbd>CONFIRM</kbd> to save the configuration and restart Matterbridge again.
-> [!WARNING]
-> The Apple Home app only supports robot vacuums when they are standalone individually-paired Matter nodes. Attempting to pair a Matterbridge instance with multiple robot vacuums, or a robot vacuum plus other device types, can cause the Home app to crash or fail to properly recognise some of the devices. If you are using HomeKit with a robot vacuum then configure a separate Matterbridge instance for each robot vacuum.
+
+| ⚠️ Apple HomeKit + Robot Vacuums  |
+| --- |
+| *The Apple Home app only supports robot vacuums when they are standalone individually-paired Matter nodes. Attempting to pair a Matterbridge instance with multiple robot vacuums, or a robot vacuum plus other device types, can cause the Home app to crash or fail to properly recognise some of the devices. If you are using HomeKit with a robot vacuum then configure a separate Matterbridge instance for each robot vacuum.* |
 
 <details>
 <summary>Separate Matterbridge Instance per Robot Vacuum</summary>
@@ -312,7 +312,11 @@ If you have discovered an issue or have an idea for how to improve this project,
 
 As explained in [`CONTRIBUTING.md`](https://github.com/thoukydides/.github/blob/master/CONTRIBUTING.md), this project does **NOT** accept pull requests. Any PRs submitted will be closed without discussion.
 
-## ISC License (ISC)
+## Legal
+
+AEG, Electrolux, and Zanussi are trademarks of [AB Electrolux](https://www.electroluxgroup.com/).
+
+### ISC License (ISC)
 
 <details>
 <summary>Copyright © 2025 Alexander Thoukydides</summary>
