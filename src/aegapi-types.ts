@@ -75,10 +75,15 @@ export interface ApplianceCapabilityPropertiesString {
     disabled?:          boolean;
     values?:            CapabilityValues;
 }
+export interface ApplianceCapabilityPropertiesCustom {
+    access:             CapabilityAccess;
+    type:               'custom';
+}
 export type ApplianceCapabilityProperties =
     ApplianceCapabilityPropertiesBase
   | ApplianceCapabilityPropertiesNumber
-  | ApplianceCapabilityPropertiesString;
+  | ApplianceCapabilityPropertiesString
+  | ApplianceCapabilityPropertiesCustom;
 export interface ApplianceCapabilities {
     [index: string]:    ApplianceCapabilities | ApplianceCapabilityProperties;
 }
