@@ -141,18 +141,26 @@ export interface RX9ApplianceCapabilities {
             EMPTY:          RX9NoTriggers;
             FULL:           RX9NoTriggers;
         }
-    },
+    };
     batteryStatus?: {
         access:         'read';
         type:           'int';
         max:            6;
         min:            1;
-    },
+    };
     powerMode?: {
         access:         'read';
         type:           'int';
         min:            1;
         max:            3;
+    };
+    'CustomPlay/persistentMapId'?: {
+        access:         'readwrite';
+        type:           'custom';
+    };
+    'CustomPlay/zones'?: {
+        access:         'readwrite';
+        type:           'custom';
     }
 }
 export interface RX9ApplianceInfo {
