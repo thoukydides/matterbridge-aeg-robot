@@ -6,6 +6,11 @@ import { AEGAPI } from './aegapi.js';
 import { ApplianceId, Appliances } from './aegapi-types.js';
 import { logError, plural } from './utils.js';
 import { AEGAPIRX9 } from './aegapi-rx9.js';
+import {
+    RX92PowerMode,
+    RX9InteractiveMap,
+    RX9InteractiveMaps
+} from './aegapi-rx9-types.js';
 
 // A test failure
 interface Failure {
@@ -53,8 +58,8 @@ export class AEGAPITest {
             if (applianceIds.length === 0)
                 this.log.warn('No AEG RX9.1 or RX9.2 robot vacuum cleaner found for API test');
             for (const applianceId of applianceIds) {
-                await this.runSafeRX9Tests(applianceId);
-                if (this.unsafe) await this.runUnsafeRX9Tests(applianceId);
+                const maps = await this.runSafeRX9Tests(applianceId);
+                if (this.unsafe) await this.runUnsafeRX9Tests(applianceId, maps?.[0]);
             }
 
             // Log a summary of the results
@@ -76,7 +81,7 @@ export class AEGAPITest {
     }
 
     // Run safe AEG RX9.1 or RX9.2 robot vacuum cleaner  tests
-    async runSafeRX9Tests(applianceId: ApplianceId): Promise<void> {
+    async runSafeRX9Tests(applianceId: ApplianceId): Promise<RX9InteractiveMaps | undefined> {
         const test = this.makeTester(this.api);
         const rx9test = this.makeTester(this.api.rx9API(applianceId));
 
@@ -85,16 +90,24 @@ export class AEGAPITest {
         await rx9test('getApplianceInfo');
         await test('getApplianceState', applianceId);
         await rx9test('getApplianceState');
+        const maps = await rx9test('getInteractiveMaps');
+
+        // Return results required for other tests
+        return maps;
     }
 
     // Run unsafe AEG RX9.1 or RX9.2 robot vacuum cleaner tests
-    async runUnsafeRX9Tests(applianceId: ApplianceId): Promise<void> {
+    async runUnsafeRX9Tests(applianceId: ApplianceId, map?: RX9InteractiveMap): Promise<void> {
         const test = this.makeTester(this.api);
         const rx9test = this.makeTester(this.api.rx9API(applianceId));
 
         // Run the tests
         await test('sendCommand', applianceId, { CleaningCommand: 'home' });
         await rx9test('sendCleaningCommand', 'home');
+        if (map) {
+            const zones = map.zones.map(({ id }) => ({ zoneId: id, powerMode: RX92PowerMode.Power }));
+            await rx9test('sendCustomPlayCommand', map.id, zones);
+        }
     }
 
     // Identify AEG RX9.1 or RX9.2 robot vacuum cleaners to run tests against

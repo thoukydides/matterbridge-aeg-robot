@@ -61,6 +61,25 @@ export enum RX9Dustbin {
     Full                    = 'full'
 }
 
+// Interactive map zone room type
+export enum RX9RoomCategory {
+    Kitchen                 = 0,
+    DiningRoom              = 1,
+    Hall                    = 2,
+    LivingRoom              = 3,
+    Bedroom                 = 4,
+    TVRoom                  = 5,
+    Bathroom                = 6,
+    ChildrenRoom            = 7,
+    Office                  = 8,
+    Storage                 = 9
+}
+
+// Interactive map zone behaviour
+export type RX9ZoneType =
+    'clean'
+  | 'avoid';
+
 // Functionality supported by the AEG RX9.1 and RX9.2
 export type RX9Capabilities =
     'EcoMode'               // RX9.1 models (2 levels via ecoMode)
@@ -214,7 +233,40 @@ export interface RX9ApplianceState {
     properties:         RX9ApplianceStateProperties;
 }
 
+// GET /api/v1/appliances/{applianceId}/interactiveMap
+export interface RX9InteractiveMapVertex {
+    x:                  number;
+    y:                  number;
+}
+export interface RX9InteractiveMapZone {
+    name:               string;     // e.g. 'Living Room'
+    id:                 string;     // UUID
+    zoneType:           RX9ZoneType;
+    vertices:           RX9InteractiveMapVertex[];
+    roomCategory:       RX9RoomCategory;
+    powerMode:          RX92PowerMode | null;
+}
+export interface RX9InteractiveMap {
+    name:               string;     // e.g. 'Home'
+    id:                 string;     // UUID
+    timestamp:          string;     // e.g. '2023-12-20T14:10:43+00:00'
+    rotation:           number;     // e.g. 0
+    zones:              RX9InteractiveMapZone[];
+}
+export type RX9InteractiveMaps = RX9InteractiveMap[];
+
 // PUT /api/v1/appliances/{applianceId}/command
-export interface RX9Command {
+export interface RX9CommandCleaning {
     CleaningCommand:    RX9CleaningCommand;
 }
+export interface RX9CommandCustomPlayZone {
+    zoneId:             string;     // UUID
+    powerMode:          RX92PowerMode;
+}
+export interface RX9CommandCustomPlay {
+    CustomPlay: {
+        persistentMapId?:   string; // UUID
+        zones:              RX9CommandCustomPlayZone[];
+    }
+}
+export type RX9Command = RX9CommandCleaning | RX9CommandCustomPlay;
