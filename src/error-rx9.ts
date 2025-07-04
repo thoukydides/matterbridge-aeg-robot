@@ -1,7 +1,7 @@
 // Matterbridge plugin for AEG RX9 / Electrolux Pure i9 robot vacuum
 // Copyright © 2025 Alexander Thoukydides
 
-import { ModeBase, RvcOperationalState } from 'matterbridge/matter/clusters';
+import { ModeBase, RvcOperationalState, ServiceArea } from 'matterbridge/matter/clusters';
 import { VENDOR_ERROR_RX9 } from './behavior-rx9.js';
 
 // RVC Operational State errors
@@ -59,7 +59,7 @@ export class RvcOperationalStateError extends Error {
         };
     }
 
-    // Standard error codes defined by the RVC Operational State Cluster
+    // Standard error codes defined by the RVC Operational State cluster
     static readonly NoError                   = this.create('NoError');
     static readonly UnableToStartOrResume     = this.create('UnableToStartOrResume');
     static readonly UnableToCompleteOperation = this.create('UnableToCompleteOperation');
@@ -105,9 +105,49 @@ export class ChangeToModeError extends Error {
         };
     }
 
-    // Standard status codes defined by the Mode Base Cluster
+    // Standard status codes defined by the Mode Base cluster
     static readonly Success         = this.create('Success');
     static readonly UnsupportedMode = this.create('UnsupportedMode');
     static readonly GenericFailure  = this.create('GenericFailure');
     static readonly InvalidInMode   = this.create('InvalidInMode');
+}
+
+// Service Area SelectAreas errors
+export class SelectAreaError extends Error {
+
+    // Create a new error
+    constructor(readonly status: ServiceArea.SelectAreasStatus | number, message?: string, options?: ErrorOptions) {
+        super(message, options);
+        Error.captureStackTrace(this, SelectAreaError);
+        const statusName = ServiceArea.SelectAreasStatus[status];
+        this.name = `SelectAreaError[${statusName ?? `0x${status.toString(16)}`}]`;
+    }
+
+    // Convert an arbitrary error (or nullish for success) to a SelectAreasResponse
+    static toResponse(err?: unknown): ServiceArea.SelectAreasResponse {
+        return {
+            status:     err instanceof SelectAreaError ? err.status
+                        : ServiceArea.SelectAreasStatus[err ? 'InvalidInMode' : 'Success'],
+            statusText: err instanceof Error ? err.message.substring(0, 256) : 'Unable to select areas'
+        };
+    }
+
+    // Helper function to create a new error class with a specific status code
+    static create(
+        statusName: keyof typeof ServiceArea.SelectAreasStatus
+    ): new (message?: string, options?: ErrorOptions) => SelectAreaError {
+        const statusCode = ServiceArea.SelectAreasStatus[statusName];
+        return class extends SelectAreaError {
+            constructor(message?: string, options?: ErrorOptions) {
+                message ??= `SelectArea status ${statusName}`;
+                super(statusCode, message, options);
+            }
+        };
+    }
+
+    // Standard status codes defined by the Service Area cluster
+    static readonly Success         = this.create('Success');
+    static readonly UnsupportedArea = this.create('UnsupportedArea');
+    static readonly InvalidInMode   = this.create('InvalidInMode');
+    static readonly InvalidSet      = this.create('InvalidSet');
 }

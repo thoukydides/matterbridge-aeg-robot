@@ -110,8 +110,14 @@ export class AEGApplianceRX9CtrlActivity extends AEGApplianceRX9Ctrl<ActivityRX9
                 await setTimeout(delay, undefined, { signal });
             }
 
-            // Send the next command
-            await this.api.sendCleaningCommand(command, signal);
+            // Send the next command, selecting 'CustomPlay' instead of 'Play' if appropriate
+            if (command === 'play' && this.appliance.customPlay) {
+                const { persistentMapId, zones } = this.appliance.customPlay;
+                this.log.info(`Using ${CC}CustomPlay${RR} command for zone cleaning`);
+                await this.api.sendCustomPlayCommand(persistentMapId, zones, signal);
+            } else {
+                await this.api.sendCleaningCommand(command, signal);
+            }
             this.lastCommandTime = Date.now();
         }
     }

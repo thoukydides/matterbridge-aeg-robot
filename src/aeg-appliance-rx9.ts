@@ -13,7 +13,9 @@ import {
     RX9Dustbin,
     RX9Message,
     RX92PowerMode,
-    RX9RobotStatus
+    RX9RobotStatus,
+    RX9InteractiveMaps,
+    RX9CustomPlayMapZones
 } from './aegapi-rx9-types.js';
 import { AEGAPIRX9 } from './aegapi-rx9.js';
 import { Appliance, ApplianceInfoDTO } from './aegapi-types.js';
@@ -67,7 +69,8 @@ export class AEGApplianceRX9
     implements Appliance, ApplianceInfoDTO {
 
     // Control the robot
-    readonly setActivity: (command: ActivityRX9) => Promise<boolean>;
+    readonly setActivity:   (command: ActivityRX9) => Promise<boolean>;
+    customPlay?:            RX9CustomPlayMapZones;
 
     // Static information
     //   ... from getAppliances
@@ -116,7 +119,8 @@ export class AEGApplianceRX9
         readonly api:       AEGAPIRX9,
         appliance:          Appliance,
         info:               RX9ApplianceInfo,
-        state:              RX9ApplianceState
+        state:              RX9ApplianceState,
+        readonly maps:      RX9InteractiveMaps
     ) {
         super({ captureRejections: true });
         super.on('error', err => { logError(this.log, 'Event', err); });
@@ -326,7 +330,13 @@ export class AEGApplianceRX9
         const info  = await api.getApplianceInfo();
         const state = await api.getApplianceState();
 
+        // Only read interactive maps if CustomPlay capability advertised
+        let maps: RX9InteractiveMaps = [];
+        if ('CustomPlay' in state.properties.reported.capabilities) {
+            maps  = await api.getInteractiveMaps();
+        }
+
         // Create the robot manager
-        return new AEGApplianceRX9(log, config, api, appliance, info, state);
+        return new AEGApplianceRX9(log, config, api, appliance, info, state, maps);
     }
 }

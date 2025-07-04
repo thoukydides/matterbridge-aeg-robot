@@ -3,15 +3,17 @@
 
 import { Behavior, MaybePromise } from 'matterbridge/matter';
 import { ClusterModel, FieldElement } from 'matterbridge/matter';
-import { ModeBase, RvcOperationalState } from 'matterbridge/matter/clusters';
+import { ModeBase, RvcOperationalState, ServiceArea } from 'matterbridge/matter/clusters';
 import {
     RvcCleanModeBehavior,
     RvcOperationalStateBehavior,
-    RvcRunModeBehavior
+    RvcRunModeBehavior,
+    ServiceAreaBehavior
 } from 'matterbridge/matter/behaviors';
 import { AnsiLogger } from 'matterbridge/logger';
-import { ChangeToModeError, RvcOperationalStateError } from './error-rx9.js';
-import { assertIsDefined, assertIsInstanceOf, logError } from './utils.js';
+import { ChangeToModeError, RvcOperationalStateError, SelectAreaError } from './error-rx9.js';
+import { assertIsDefined, assertIsInstanceOf, formatList, logError } from './utils.js';
+import { isDeepStrictEqual } from 'util';
 
 // Robot Vacuum Cleaner Run Mode cluster modes
 export enum RvcRunModeRX9 {
@@ -55,6 +57,7 @@ export interface EndpointCommandsRX9 {
     Pause:           ()                         => MaybePromise;
     Resume:          ()                         => MaybePromise;
     GoHome:          ()                         => MaybePromise;
+    SelectAreas:     (newAreas: number[])       => MaybePromise;
 }
 type EndpointCommandRX9Args<T extends keyof EndpointCommandsRX9> = Parameters<EndpointCommandsRX9[T]>;
 type EndpointHandlerRX9<T extends keyof EndpointCommandsRX9> = (...args: EndpointCommandRX9Args<T>) => MaybePromise;
@@ -214,5 +217,48 @@ export class RvcOperationalStateServerRX9 extends RvcOperationalStateBehavior {
     // GoHome command handler
     override goHome(): Promise<RvcOperationalState.OperationalCommandResponse> {
         return this.command('GoHome', RvcOperationalState.ErrorState.CommandInvalidInState as number);
+    }
+}
+
+// Implement command handlers for the Service Areas cluster
+export class ServiceAreaServerRX9 extends ServiceAreaBehavior {
+
+    // SelectAreas command handler
+    override async selectAreas({ newAreas }: ServiceArea.SelectAreasRequest): Promise<ServiceArea.SelectAreasResponse> {
+        const { device } = this.agent.get(BehaviorRX9).state;
+        const { log } = device;
+        try {
+            // Remove any duplicated areas from the list
+            log.info(`Service Area command: SelectAreas ${formatList(newAreas.map(id => String(id)))}`);
+            newAreas = [...new Set(newAreas)];
+
+            // Check whether it is a valid request
+            const maps = new Set<number | null>();
+            for (const area of newAreas) {
+                const supportedArea = this.state.supportedAreas.find(({ areaId }) => areaId === area);
+                if (!supportedArea) throw new SelectAreaError.UnsupportedArea(`${area} is not a supported area`);
+                maps.add(supportedArea.mapId);
+            }
+
+            // If all areas are specified then treat it as an empty list
+            if (newAreas.length === this.state.supportedAreas.length) newAreas = [];
+            else if (maps.size !== 1) throw new SelectAreaError.InvalidSet('Areas must all be from the same map');
+
+            // Attempt to select the areas
+            await device.executeCommand('SelectAreas', newAreas);
+            this.state.selectedAreas = newAreas;
+
+            // Success
+            return SelectAreaError.toResponse();
+        } catch (err) {
+            if (isDeepStrictEqual(new Set(this.state.selectedAreas), new Set(newAreas))) {
+                // Matter requires Success status if the areas are unchanged
+                logError(log, 'Service Area SelectAreas (error ignored)', err);
+                return SelectAreaError.toResponse();
+            } else {
+                logError(log, 'Service Area SelectAreas', err);
+                return SelectAreaError.toResponse(err);
+            }
+        }
     }
 }

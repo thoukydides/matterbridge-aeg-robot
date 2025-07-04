@@ -9,6 +9,7 @@ import { BABEL_DYNAMIC_RX9 } from './babel-dynamic-rx9.js';
 import { isDeepStrictEqual } from 'util';
 import { MaybePromise } from 'matterbridge/matter';
 import { logError } from './utils.js';
+import { BabelServiceAreaRX9 } from './babel-areas-rx9.js';
 
 // Derive types from the definition
 type BabelDynamicRX9 = typeof BABEL_DYNAMIC_RX9;
@@ -29,7 +30,10 @@ type StatusEmit<K extends BabelEventRX9> = (newValue: BabelStatusRX9[K]) => Mayb
 export class BabelRX9 {
 
     // Static appliance information
-    readonly basicInformation: BabelStaticRX9;
+    readonly static: BabelStaticRX9;
+
+    // Service areas (iInteractive maps)
+    readonly areas: BabelServiceAreaRX9;
 
     // Event listeners
     private readonly listeners: Partial<BabelListenersRX9> = {};
@@ -43,8 +47,9 @@ export class BabelRX9 {
         readonly config:    Config,
         readonly appliance: AEGApplianceRX9
     ) {
-        // Delegate manipulation of static data
-        this.basicInformation = new BabelStaticRX9(this.log, this.config, this.appliance);
+        // Delegate manipulation of static data and service areas
+        this.areas = new BabelServiceAreaRX9(this.log, this.config, this.appliance);
+        this.static = new BabelStaticRX9(this.log, this.config, this.appliance, this.areas);
 
         // Translate and emit events for dynamic data whenever it changes
         this.appliance.on('changed', () => {

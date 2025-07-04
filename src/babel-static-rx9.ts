@@ -1,13 +1,14 @@
 // Matterbridge plugin for AEG RX9 / Electrolux Pure i9 robot vacuum
 // Copyright © 2025 Alexander Thoukydides
 
-import { BasicInformation } from 'matterbridge/matter/clusters';
+import { BasicInformation, ServiceArea } from 'matterbridge/matter/clusters';
 import { createHash } from 'node:crypto';
 import { AEGApplianceRX9 } from './aeg-appliance-rx9.js';
 import { EndpointInformationRX9 } from './endpoint-rx9.js';
 import { AnsiLogger } from 'matterbridge/logger';
 import { Config } from './config-types.js';
 import { formatDateISO8601 } from './utils.js';
+import { BabelServiceAreaRX9 } from './babel-areas-rx9.js';
 
 // Mapping from API colours to Matter ProductFinish equivalents
 const COLOUR_MAP = new Map<string, BasicInformation.Color>([
@@ -64,7 +65,8 @@ export class BabelStaticRX9 implements EndpointInformationRX9 {
     constructor(
         readonly log:       AnsiLogger,
         readonly config:    Config,
-        readonly appliance: AEGApplianceRX9
+        readonly appliance: AEGApplianceRX9,
+        readonly areas:     BabelServiceAreaRX9
     ) {}
 
     // Generate a human-readable unique storage key
@@ -156,6 +158,17 @@ export class BabelStaticRX9 implements EndpointInformationRX9 {
         const familyModel = PNC_FAMILY_MODEL.get(pnc);
         if (!familyModel) warnUnrecognisedValue(this.log, 'PNC', pnc);
         return familyModel ?? {};
+    }
+
+    // List of supported areas (zones) for cleaning
+    get supportedAreas(): ServiceArea.Area[] {
+        return this.areas.supportedAreas;
+    }
+
+    // List of supported maps for cleaning
+    get supportedMaps(): ServiceArea.Map[] {
+        return this.areas.supportedMaps;
+
     }
 }
 

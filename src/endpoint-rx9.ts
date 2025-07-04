@@ -16,7 +16,8 @@ import {
     BasicInformation,
     PowerSource,
     RvcCleanMode,
-    RvcRunMode
+    RvcRunMode,
+    ServiceArea
 } from 'matterbridge/matter/clusters';
 import {
     BehaviorDeviceRX9,
@@ -27,7 +28,8 @@ import {
     RvcOperationalStateRX9,
     RvcOperationalStateServerRX9,
     RvcRunModeRX9,
-    RvcRunModeServerRX9
+    RvcRunModeServerRX9,
+    ServiceAreaServerRX9
 } from './behavior-rx9.js';
 import { AnsiLogger } from 'matterbridge/logger';
 import { PLUGIN_URL } from './settings.js';
@@ -51,8 +53,11 @@ export interface EndpointInformationRX9 {
     productLabel:           string; // 64 characters max
     serialNumber:           string; // 32 characters max
     productAppearance?:     BasicInformation.ProductAppearance;
-    // Other endpoint configuration
+    // RVC Clean Mode cluster configuration
     smartPowerCapable:      boolean;
+    // Service Area cluster attributes
+    supportedAreas:         ServiceArea.Area[];
+    supportedMaps:          ServiceArea.Map[];
 }
 
 // A Matterbridge endpoint with robot vacuum cleaner clusters
@@ -81,6 +86,9 @@ export class EndpointRX9 extends MatterbridgeEndpoint {
             .createRvcRunModeClusterServer()
             .createRvcCleanModeClusterServer()
             .createRvcOperationalStateClusterServer();
+        if (information.supportedAreas.length) {
+            this.createServiceAreaClusterServer();
+        }
 
         // Add a command handler behavior
         this.behaviorDeviceRX9 = new BehaviorDeviceRX9(this.log);
@@ -304,6 +312,28 @@ export class EndpointRX9 extends MatterbridgeEndpoint {
             phaseList:              null,
             currentPhase:           null,
             countdownTime:          null
+        });
+        return this;
+    }
+
+    // Create Service Area cluster
+    createServiceAreaClusterServer(): this {
+        this.behaviors.require(ServiceAreaServerRX9.withFeatures(
+            ServiceArea.Feature.Maps,
+            ServiceArea.Feature.SelectWhileRunning
+        ).enable({
+            commands: {
+                selectAreas:            true
+            }
+        }), {
+            // Constant attributes
+            supportedAreas:         this.information.supportedAreas,
+            supportedMaps:          this.information.supportedMaps,
+            // Variable attributes (with dummy defaults)
+            selectedAreas:          [],
+            // Unsupported attributes
+            currentArea:            undefined,
+            estimatedEndTime:       undefined
         });
         return this;
     }

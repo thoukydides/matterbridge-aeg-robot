@@ -19,7 +19,10 @@ import {
     RvcOperationalState,
     RvcRunMode
 } from 'matterbridge/matter/clusters';
-import { ChangeToModeError, RvcOperationalStateError } from './error-rx9.js';
+import {
+    ChangeToModeError,
+    RvcOperationalStateError
+} from './error-rx9.js';
 import { isDeepStrictEqual } from 'util';
 import { formatSeconds, MS } from './utils.js';
 import { ActivityRX9 } from './aeg-appliance-rx9-ctrl-activity.js';
@@ -44,7 +47,7 @@ export class DeviceRX9 extends EndpointRX9 {
     ) {
         // Create a robot vacuum cleaner device
         const babel = new BabelRX9(log, config, appliance);
-        super(log, config, babel.basicInformation);
+        super(log, config, babel.static);
         this.babel = babel;
 
         // Update the cluster attributes and trigger events when required
@@ -98,6 +101,12 @@ export class DeviceRX9 extends EndpointRX9 {
             this.log.info(`${CN}RVC Clean Mode${RR} ChangeToMode ${CV}${RvcCleanModeRX9[newMode]}${RR}`
                 + ` (${CV}${newMode}${RR}) → ${CV}not supported${RR}`);
             throw new Error('Unsupported by Electrolux Global API');
+        });
+
+        // Handle Service Area SelectAreas commands
+        this.setCommandHandlerRX9('SelectAreas', newAreas => {
+            this.babel.areas.selectedAreas = newAreas;
+            this.log.info(`${CN}ServiceArea${RR} SelectAreas ${CV}${this.babel.areas.toString()}${RR}`);
         });
     }
 
