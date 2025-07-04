@@ -72,7 +72,8 @@ export enum RX9RoomCategory {
     Bathroom                = 6,
     ChildrenRoom            = 7,
     Office                  = 8,
-    Storage                 = 9
+    Storage                 = 9,
+    Other                   = 10
 }
 
 // Interactive map zone behaviour
@@ -263,10 +264,11 @@ export interface RX9CommandCustomPlayZone {
     zoneId:             string;     // UUID
     powerMode:          RX92PowerMode;
 }
+export interface RX9CustomPlayMapZones {
+    persistentMapId:    string; // UUID
+    zones:              RX9CommandCustomPlayZone[];
+}
 export interface RX9CommandCustomPlay {
-    CustomPlay: {
-        persistentMapId?:   string; // UUID
-        zones:              RX9CommandCustomPlayZone[];
-    }
+    CustomPlay:        RX9CustomPlayMapZones;
 }
 export type RX9Command = RX9CommandCleaning | RX9CommandCustomPlay;
