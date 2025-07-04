@@ -19,7 +19,7 @@ to the [Matter](https://csa-iot.org/all-solutions/matter/) smart home ecosystem.
 ## Installation
 
 ### Step 1 - Create Account and Setup Robot Vacuum
-1. Use the AEG [iPhone](https://apps.apple.com/gb/app/aeg/id1599494494) or [Android](https://play.google.com/store/apps/details?id=com.electrolux.oneapp.android.aeg) app to create an account. *(It may be necessary to logout and login again to complete account creation.)*
+1. Use the AEG [iPhone](https://apps.apple.com/gb/app/aeg/id1599494494) or [Android](https://play.google.com/store/apps/details?id=com.electrolux.oneapp.android.aeg) app to create an account. *(You may need to log out and back in again to complete account creation.)*
 1. Add the RX series robot vacuum to your AEG/Electrolux/Zanussi account.
 
 ### Step 2 - Obtain Electrolux Web API Credentials
@@ -174,7 +174,7 @@ The supported `debugFeatures` are:
 
 This plugin supports starting, pausing, stopping cleaning, and returning the vacuum to its charging dock. It also reports whether the vacuum is actively cleaning, the current power level, docked status, battery level, and any active errors.
 
-Unfortunately, the Electrolux Group API only allows basic control of robot vacuums: **Play**, **Stop**, **Pause**, and **Home**. It does not support any other control (such as selection of power modes, spot cleaning, or zones), so these cannot be controlled via this plugin.
+Unfortunately, the Electrolux Group API only allows basic control of robot vacuums: **Play** (clean everywhere), **CustomPlay** (specified zones), **Stop**, **Pause**, and **Home**. It does not support any other control (such as selection of power modes or spot cleaning), so these cannot be controlled via this plugin.
 
 <details>
 <summary>Matter Clusters</summary>
@@ -237,7 +237,7 @@ It supports a single command:
 
 ### RVC Clean Mode Cluster
 
-The **RVC Clean Mode Cluster** indicates the type of clean being performed:
+The **RVC Clean Mode** cluster indicates the type of clean being performed:
 
 | RX9.1          | RX9.2   | Full Clean | Full Clean ModeTags                               | Spot Clean  | Spot Clean ModeTags | Description                                                 |
 | -------------- | ------- | :--------: | ------------------------------------------------- | :---------: | ------------------- | ----------------------------------------------------------- |
@@ -249,7 +249,7 @@ Although the **ChangeToMode** command is defined, it will always return an error
 
 ### RVC Operational State Cluster
 
-The **RVC Operational State Cluster** indicates the detailed robot vacuum status:
+The **RVC Operational State** cluster indicates the detailed robot vacuum status:
 * **OperationalState**: Indicates the current state of the robot vacuum:
 
 | Reported Status                                                                              | OperationalState                 |
@@ -274,6 +274,16 @@ It supports three commands:
 It also generates two events:
 * **OperationCompletion**: Triggered when **RVC Run Mode** transitions from *Cleaning* to *Idle* indicating the end of a cleaning operation.
 * **OperationalError**: Triggered when a new **OperationalError** occurs.
+
+### Service Area Cluster
+
+The **Service Area** cluster controls which zones will be cleaned:
+* **SupportedAreas**: List of zones supported by the robot vacuum (excluding any avoid zones), across all interactive maps.
+* **SupportedMaps**: List of interactive maps supported by the robot vacuum.
+* **SelectedAreas**: List of areas that will be cleaned when the **ChangeToMode** command is next used to change **RVC Run Mode** from *Idle* to *Cleaning*. If this is an empty list then a **Play** command will be used to perform a full clean at the currently selected power level. Otherwise, a **CustomPlay** command will be used to clean the specified zones with the preferred power level configured for each zone.
+
+It supports a single command:
+* **SelectAreas**: Set **SelectedAreas** to the specified list of areas (with any duplicates removed). If all **SupportedAreas** are specified then it is treated as an empty list (to avoid problems with multiple maps).
 
 </details>
 
