@@ -25,6 +25,7 @@ export interface Config {
     accessTokenURL?:        string;
     refreshToken:           string;
     pollIntervalSeconds:    number;
+    enableServerRvc:        boolean;
     debug:                  boolean;
     debugFeatures:          DebugFeatures[];
     unregisterOnShutdown:   boolean;

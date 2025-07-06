@@ -33,6 +33,7 @@ export const DEFAULT_CONFIG: Partial<Config> = {
     whiteList:              [],
     blackList:              [],
     pollIntervalSeconds:    30, // 2880 calls/day per robot vacuum cleaner
+    enableServerRvc:        true,
     debug:                  false,
     debugFeatures:          [],
     unregisterOnShutdown:   false
@@ -49,3 +50,6 @@ if (process.env.ELECTROLUX_ACCESS_TOKEN_URL) {
         refreshToken:   ''
     });
 }
+
+// No certified AEG/Electrolux Matter products
+export const VENDOR_ID = 0xFFF1; // Test Vendor #1

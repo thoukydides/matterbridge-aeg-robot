@@ -9,6 +9,7 @@ import {
     roboticVacuumCleaner
 } from 'matterbridge';
 import {
+    BasicInformationServer,
     BridgedDeviceBasicInformationServer,
     PowerSourceServer
 } from 'matterbridge/matter/behaviors';
@@ -32,27 +33,29 @@ import {
     ServiceAreaServerRX9
 } from './behavior-rx9.js';
 import { AnsiLogger } from 'matterbridge/logger';
-import { PLUGIN_URL } from './settings.js';
 import { Config } from './config-types.js';
 import { RvcOperationalStateError } from './error-rx9.js';
-import { AtLeastOne } from 'matterbridge/matter';
+import { AtLeastOne, ServerNode } from 'matterbridge/matter';
 
 // Device-specific endpoint configuration
 export interface EndpointInformationRX9 {
     // Matter.js endpoint identifier
     uniqueStorageKey:       string;
     // Device Basic Information cluster attributes
-    uniqueId:               string; // 32 characters max
-    vendorName:             string; // 32 characters max
-    productName:            string; // 32 characters max
-    nodeLabel:              string, // 32 characters max
     hardwareVersion:        string; // 64 characters max
-    softwareVersion:        string; // 64 characters max
     manufacturingDate:      string; // 'YYYMMDD'
+    nodeLabel:              string, // 32 characters max
     partNumber:             string; // 32 characters max
-    productLabel:           string; // 64 characters max
-    serialNumber:           string; // 32 characters max
     productAppearance?:     BasicInformation.ProductAppearance;
+    productId:              number; // uint16
+    productLabel:           string; // 64 characters max
+    productName:            string; // 32 characters max
+    productUrl:             string; // 256 characters max
+    serialNumber:           string; // 32 characters max
+    softwareVersion:        string; // 64 characters max
+    uniqueId:               string; // 32 characters max
+    vendorId:               number; // uint16
+    vendorName:             string; // 32 characters max
     // RVC Clean Mode cluster configuration
     smartPowerCapable:      boolean;
     // Service Area cluster attributes
@@ -72,16 +75,34 @@ export class EndpointRX9 extends MatterbridgeEndpoint {
         readonly config:        Config,
         readonly information:   EndpointInformationRX9
     ) {
-        const definition: AtLeastOne<DeviceTypeDefinition> = [roboticVacuumCleaner, bridgedNode, powerSource];
+        const definition: AtLeastOne<DeviceTypeDefinition> = [roboticVacuumCleaner, powerSource];
+        const mode = config.enableServerRvc ? 'server' : undefined;
+        if (!mode) definition.push(bridgedNode);
         const debug = config.debugFeatures.includes('Log Endpoint Debug');
-        super(definition, { uniqueStorageKey: information.uniqueStorageKey }, debug);
+        super(definition, { uniqueStorageKey: information.uniqueStorageKey, mode }, debug);
 
         // Use supplied logger instead of the one created by the base class
         this.log = log;
 
+        // Matterbridge requires a unique name for each endpoint
+        this.deviceName             = information.nodeLabel;
+
+        // Copy of values (possibly) required by Matterbridge
+        this.hardwareVersion        = parseInt(this.information.hardwareVersion, 10);
+        this.hardwareVersionString  = information.hardwareVersion;
+        this.productId              = information.productId;
+        this.productName            = information.productName;
+        this.serialNumber           = information.serialNumber;
+        this.softwareVersion        = parseInt(this.information.softwareVersion, 10);
+        this.softwareVersionString  = information.softwareVersion;
+        this.uniqueId               = information.uniqueId;
+        this.vendorId               = information.vendorId;
+        this.vendorName             = information.vendorName;
+
         // Create the clusters
+        // (Matterbridge creates the Basic Information cluster in 'server' mode)
+        if (!mode) this.createBridgedDeviceBasicInformationClusterServer();
         this.createDefaultIdentifyClusterServer()
-            .createBridgedDeviceBasicInformationClusterServer()
             .createPowerSourceClusterServer()
             .createRvcRunModeClusterServer()
             .createRvcCleanModeClusterServer()
@@ -95,22 +116,38 @@ export class EndpointRX9 extends MatterbridgeEndpoint {
         this.behaviors.require(BehaviorRX9, { device: this.behaviorDeviceRX9 });
     }
 
+    // Perform any post-registration setup
+    async postRegister(): Promise<void> {
+        // Matterbridge incorrectly sets Basic Information cluster attributes
+        if (this.serverNode) {
+            this.log.info('Patching Basic Information cluster attributes');
+            await this.patchBasicInformationClusterServer(this.serverNode);
+        }
+    }
+
+    // Patch the Basic Information cluster attributes with correct values
+    async patchBasicInformationClusterServer(serverNode: ServerNode): Promise<void> {
+        await serverNode.setStateOf(BasicInformationServer, {
+            // Mandatory attributes that should already be set correctly:
+            //   productId, productName, vendorId, vendorName
+            // Mandatory attributes incorrectly set by Matterbridge
+            hardwareVersion:        parseInt(this.information.hardwareVersion, 10),
+            hardwareVersionString:  this.information.hardwareVersion    .substring(0, 64),
+            nodeLabel:              this.information.nodeLabel          .substring(0, 32),
+            softwareVersion:        parseInt(this.information.softwareVersion, 10),
+            softwareVersionString:  this.information.softwareVersion    .substring(0, 64),
+            // Optional attributes incorrectly set by Matterbridge
+            manufacturingDate:      this.information.manufacturingDate  .substring(0, 16),
+            partNumber:             this.information.partNumber         .substring(0, 32),
+            productAppearance:      this.information.productAppearance,
+            productLabel:           this.information.productLabel       .substring(0, 64),
+            productUrl:             this.information.productUrl         .substring(0, 256),
+            serialNumber:           this.information.serialNumber       .substring(0, 32)
+        });
+    }
+
     // Create the Bridged Device Basic Information cluster
     createBridgedDeviceBasicInformationClusterServer(): this {
-        // Copy of values (possibly) required by Matterbridge
-        this.deviceName             = this.information.nodeLabel;
-        this.serialNumber           = this.information.serialNumber;
-        this.uniqueId               = this.information.uniqueId;
-        this.productId              = undefined;
-        this.productName            = this.information.productName;
-        this.vendorId               = undefined;
-        this.vendorName             = this.information.vendorName;
-        this.softwareVersion        = parseInt(this.information.softwareVersion, 10);
-        this.softwareVersionString  = this.information.softwareVersion;
-        this.hardwareVersion        = parseInt(this.information.hardwareVersion, 10);
-        this.hardwareVersionString  = this.information.hardwareVersion;
-
-        // Create the cluster
         this.behaviors.require(BridgedDeviceBasicInformationServer.enable({
             events: {
                 leave:              true,
@@ -119,17 +156,17 @@ export class EndpointRX9 extends MatterbridgeEndpoint {
         }), {
             // Constant attributes
             uniqueId:               this.information.uniqueId           .substring(0, 32),
-            vendorName:             this.information.vendorName         .substring(0, 32),
-            productName:            this.information.productName        .substring(0, 32),
-            nodeLabel:              this.information.nodeLabel          .substring(0, 32),
             hardwareVersion:        parseInt(this.information.hardwareVersion, 10),
             hardwareVersionString:  this.information.hardwareVersion    .substring(0, 64),
             manufacturingDate:      this.information.manufacturingDate,
+            nodeLabel:              this.information.nodeLabel          .substring(0, 32),
             partNumber:             this.information.partNumber         .substring(0, 32),
-            productUrl:             PLUGIN_URL,
-            productLabel:           this.information.productLabel       .substring(0, 64),
-            serialNumber:           this.information.serialNumber       .substring(0, 32),
             productAppearance:      this.information.productAppearance,
+            productLabel:           this.information.productLabel       .substring(0, 64),
+            productName:            this.information.productName        .substring(0, 32),
+            productUrl:             this.information.productUrl         .substring(0, 256),
+            serialNumber:           this.information.serialNumber       .substring(0, 32),
+            vendorName:             this.information.vendorName         .substring(0, 32),
             // Variable attributes
             reachable:              true,
             softwareVersion:        parseInt(this.information.softwareVersion, 10),

@@ -44,6 +44,11 @@
             "minimum": 20,
             "maximum": 600
         },
+        "enableServerRvc": {
+            "description": "Expose each robot vacuum as a standalone Matter node using Matterbridge's 'server' mode. When enabled, each robot vacuum has its own Matter fabric that must be manually paired, ensuring compatibility with Matter controllers such as the Apple Home app. When disabled, all devices are bridged within a single Matter node, which may not function correctly with some Matter controllers.",
+            "type": "boolean",
+            "default": true
+        },
         "whiteList": {
             "description": "Only expose robot vacuum devices listed here, identified by their serial number. Leave empty to expose all devices.",
             "type": "array",

@@ -12,7 +12,6 @@ import {
 import { AEGApplianceRX9 } from './aeg-appliance-rx9.js';
 import { BabelRX9 } from './babel-rx9.js';
 import {
-    BridgedDeviceBasicInformation,
     OperationalState,
     PowerSource,
     RvcCleanMode,
@@ -27,6 +26,10 @@ import { isDeepStrictEqual } from 'util';
 import { formatSeconds, MS } from './utils.js';
 import { ActivityRX9 } from './aeg-appliance-rx9-ctrl-activity.js';
 import { AN, AV, CN, CV, RR } from './logger.js';
+import {
+    BasicInformationServer,
+    BridgedDeviceBasicInformationServer
+} from 'matterbridge/matter/behaviors';
 
 // A Matterbridge robot vacuum cleaner device
 export class DeviceRX9 extends EndpointRX9 {
@@ -51,7 +54,7 @@ export class DeviceRX9 extends EndpointRX9 {
         this.babel = babel;
 
         // Update the cluster attributes and trigger events when required
-        this.updateBridgedBasicInformation();
+        this.updateBasicInformation();
         this.updatePowerSource();
         this.updateRvcRunMode();
         this.updateRvcCleanMode();
@@ -120,19 +123,17 @@ export class DeviceRX9 extends EndpointRX9 {
         await this.appliance.stop();
     }
 
-    // Update the Bridged Basic Information cluster attributes when required
-    updateBridgedBasicInformation(): void {
+    // Update the (Bridged Device) Basic Information cluster attributes when required
+    updateBasicInformation(): void {
         this.babel.on('reachable', async reachable => {
-            const clusterId = BridgedDeviceBasicInformation.Cluster.id;
             this.log.info(`${AN}Reachable${RR}: ${AV}${reachable}${RR}`);
-            await this.updateAttribute(clusterId, 'reachable', reachable, this.log);
-            const payload: BridgedDeviceBasicInformation.ReachableChangedEvent = { reachableNewValue: reachable };
-            await this.triggerEvent(clusterId, 'reachableChanged', payload, this.log);
+            if (this.serverNode) await this.serverNode.setStateOf(BasicInformationServer,   { reachable });
+            else                 await this.setStateOf(BridgedDeviceBasicInformationServer, { reachable });
         }).on('softwareVersion', async version => {
-            const clusterId = BridgedDeviceBasicInformation.Cluster.id;
             this.log.info(`${AN}Software version${RR}: ${AV}${version}${RR}`);
-            await this.updateAttribute(clusterId, 'softwareVersion',        parseInt(version, 10),  this.log);
-            await this.updateAttribute(clusterId, 'softwareVersionString',  version,                this.log);
+            const state = { softwareVersion: parseInt(version, 10), softwareVersionString: version };
+            if (this.serverNode) await this.serverNode.setStateOf(BasicInformationServer,   state);
+            else                 await this.setStateOf(BridgedDeviceBasicInformationServer, state);
         });
     }
 

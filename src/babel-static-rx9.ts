@@ -9,6 +9,7 @@ import { AnsiLogger } from 'matterbridge/logger';
 import { Config } from './config-types.js';
 import { formatDateISO8601 } from './utils.js';
 import { BabelServiceAreaRX9 } from './babel-areas-rx9.js';
+import { PLUGIN_URL, VENDOR_ID } from './settings.js';
 
 // Mapping from API colours to Matter ProductFinish equivalents
 const COLOUR_MAP = new Map<string, BasicInformation.Color>([
@@ -82,9 +83,26 @@ export class BabelStaticRX9 implements EndpointInformationRX9 {
         return `rx9-${pnc}-${hash}`.substring(0, 32);
     }
 
+    // Use the plugin's project page as the product page
+    get productUrl(): string {
+        return PLUGIN_URL;
+    }
+
+    // Unique identifier for the vendor
+    get vendorId(): number {
+        return VENDOR_ID;
+    }
+
     // Human-readable name of the vendor for the node
     get vendorName(): string {
         return this.appliance.brand;
+    }
+
+    // Use any digits in the model number as the product identifier
+    get productId(): number {
+        const hex = this.appliance.model.replace(/[^0-9]/g, '');
+        const parsed = parseInt(hex.substring(0, 4), 10);
+        return isNaN(parsed) ? 0x0000 : parsed;
     }
 
     // Human-readable model name; attempt to map the PNC to its model number
