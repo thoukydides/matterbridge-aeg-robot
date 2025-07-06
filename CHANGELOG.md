@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v1.1.1] - 2025-07-06
+### Fixed
+* Resolved problems with multiple robot vacuums in a single Matterbridge instance, caused by duplicate Matter.js enum values.
+
 ## [v1.1.0] - 2025-07-06
 ### Added
 * Improved Apple Home compatibility by enabling Matterbridge's `server` mode by default. This exposes each robot vacuum as a standalone Matter node rather than a bridged endpoint. It requires each robot vacuum to be re-paired with the Matter controller. The previous bridged behaviour can be restored by setting `"enableServerRvc": false`. Requires Matterbridge v3.1.1 or later.
@@ -52,7 +56,8 @@ All notable changes to this project will be documented in this file.
 
 Copyright © 2025 Alexander Thoukydides
 
-[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.0...HEAD
+[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.1...HEAD
+[v1.1.1]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.0...v1.1.1
 [v1.1.0]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.0.0...v1.1.0
 [v1.0.0]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v0.4.1...v1.0.0
 [v0.4.1]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v0.4.0...v0.4.1

@@ -154,14 +154,9 @@ export class RvcOperationalStateServerRX9 extends RvcOperationalStateBehavior {
     static {
         const schema = RvcOperationalStateServerRX9.schema;
         assertIsInstanceOf(schema, ClusterModel);
-        const extendEnum = (name: string, values: FieldElement[]): void => {
-            const element = schema.datatypes.find(e => e.name === name);
-            assertIsDefined(element);
-            element.children = [...element.children, ...values];
-        };
 
         // Add manufacturer-specific OperationalState values
-        extendEnum('OperationalStateEnum', [
+        extendEnum(schema, 'OperationalStateEnum', [
             FieldElement({
                 name:           'ManualSteering',
                 id:             RvcOperationalStateRX9.ManualSteering,
@@ -177,7 +172,7 @@ export class RvcOperationalStateServerRX9 extends RvcOperationalStateBehavior {
         ]);
 
         // Add manufacturer-specific ErrorState values
-        extendEnum('ErrorStateEnum', [
+        extendEnum(schema, 'ErrorStateEnum', [
             FieldElement({
                 name:           'OtherError',
                 id:             VENDOR_ERROR_RX9,
@@ -260,5 +255,21 @@ export class ServiceAreaServerRX9 extends ServiceAreaBehavior {
                 return SelectAreaError.toResponse(err);
             }
         }
+    }
+}
+
+// Extend a Matter.js schema enum with new values
+function extendEnum(schema: ClusterModel, name: string, values: FieldElement[]): void {
+    const element = schema.datatypes.find(e => e.name === name);
+    assertIsDefined(element);
+    for (const value of values) {
+        // Re-use any existing definition of the same value
+        if (element.children.some(e => e.id === value.id)) continue;
+
+        // Ensure new values have unique names
+        let name = value.name;
+        let suffix = 0;
+        while (element.children.some(e => e.name === name)) name += `_${++suffix}`;
+        element.children = [...element.children, { ...value, name }];
     }
 }
