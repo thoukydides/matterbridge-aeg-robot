@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v1.1.2] - 2025-07-09
+### Changed
+* Improved logging of aggregated errors or those indicating another error as their cause.
+* Updated dependencies.
+
 ## [v1.1.1] - 2025-07-06
 ### Fixed
 * Resolved problems with multiple robot vacuums in a single Matterbridge instance, caused by duplicate Matter.js enum values.
@@ -56,7 +61,8 @@ All notable changes to this project will be documented in this file.
 
 Copyright © 2025 Alexander Thoukydides
 
-[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.1...HEAD
+[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.2...HEAD
+[v1.1.2]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.1...v1.1.2
 [v1.1.1]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.0...v1.1.1
 [v1.1.0]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.0.0...v1.1.0
 [v1.0.0]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v0.4.1...v1.0.0
