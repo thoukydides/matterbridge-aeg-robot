@@ -8,8 +8,8 @@ import { BabelStaticRX9 } from './babel-static-rx9.js';
 import { BABEL_DYNAMIC_RX9 } from './babel-dynamic-rx9.js';
 import { isDeepStrictEqual } from 'util';
 import { MaybePromise } from 'matterbridge/matter';
-import { logError } from './utils.js';
 import { BabelServiceAreaRX9 } from './babel-areas-rx9.js';
+import { logError } from './log-error.js';
 
 // Derive types from the definition
 type BabelDynamicRX9 = typeof BABEL_DYNAMIC_RX9;

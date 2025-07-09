@@ -4,7 +4,7 @@
 import { AnsiLogger } from 'matterbridge/logger';
 import { AEGApplianceRX9Log } from './aeg-appliance-log-rx9.js';
 import { Config } from './config-types.js';
-import { formatList, logError, MS } from './utils.js';
+import { formatList, MS } from './utils.js';
 import {
     RX9ApplianceInfo,
     RX9ApplianceState,
@@ -21,7 +21,11 @@ import { AEGAPIRX9 } from './aegapi-rx9.js';
 import { Appliance, ApplianceInfoDTO } from './aegapi-types.js';
 import EventEmitter from 'events';
 import { PeriodicOp } from './periodic-op.js';
-import { ActivityRX9, AEGApplianceRX9CtrlActivity } from './aeg-appliance-rx9-ctrl-activity.js';
+import {
+    ActivityRX9,
+    AEGApplianceRX9CtrlActivity
+} from './aeg-appliance-rx9-ctrl-activity.js';
+import { logError } from './log-error.js';
 
 // Dynamic information about a robot
 export interface DynamicStateRX9 {

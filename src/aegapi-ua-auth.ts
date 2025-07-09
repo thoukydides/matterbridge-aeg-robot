@@ -18,7 +18,7 @@ import {
     UAOptions,
     USER_AGENT
 } from './aegapi-ua.js';
-import { MS, logError } from './utils.js';
+import { MS } from './utils.js';
 import {
     AEGAPIAuthorisationError,
     AEGAPIError,
@@ -27,6 +27,7 @@ import {
 import { Config } from './config-types.js';
 import { checkers } from './ti/aegapi-auth-types.js';
 import NodePersist from 'node-persist';
+import { logError } from './log-error.js';
 
 // Time before token expiry to request a refresh
 const REFRESH_WINDOW_MS             = 10 * 60 * 1000;   // (10 minutes)

@@ -12,8 +12,9 @@ import {
 } from 'matterbridge/matter/behaviors';
 import { AnsiLogger } from 'matterbridge/logger';
 import { ChangeToModeError, RvcOperationalStateError, SelectAreaError } from './error-rx9.js';
-import { assertIsDefined, assertIsInstanceOf, formatList, logError } from './utils.js';
+import { assertIsDefined, assertIsInstanceOf, formatList } from './utils.js';
 import { isDeepStrictEqual } from 'util';
+import { logError } from './log-error.js';
 
 // Robot Vacuum Cleaner Run Mode cluster modes
 export enum RvcRunModeRX9 {

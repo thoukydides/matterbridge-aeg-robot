@@ -3,7 +3,7 @@
 
 import { AnsiLogger } from 'matterbridge/logger';
 import { setTimeout } from 'node:timers/promises';
-import { logError } from './utils.js';
+import { logError } from './log-error.js';
 
 // Configuration of a periodic operation
 export interface PeriodicOpConfig {

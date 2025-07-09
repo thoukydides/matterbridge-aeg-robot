@@ -2,7 +2,6 @@
 // Copyright © 2025 Alexander Thoukydides
 
 import assert from 'assert';
-import { AnsiLogger } from 'matterbridge/logger';
 import { IErrorDetail } from 'ts-interface-checker';
 
 // Milliseconds in a second
@@ -21,16 +20,6 @@ export function assertIsNotUndefined<Type>(value: Type): asserts value is Exclud
 }
 export function assertIsInstanceOf<Type extends object>(value: unknown, type: Constructor<Type>): asserts value is Type {
     assert(value instanceof type, `Not an instance of ${type.name}`);
-}
-// Log an error
-export function logError(log: AnsiLogger, when: string, err: unknown): void {
-    try {
-        // Log the error message itself
-        log.error(`[${when}] ${String(err)}`);
-
-        // Log any stack backtrace
-        if (err instanceof Error && err.stack) log.debug(err.stack);
-    } catch { /* empty */ }
 }
 
 // Format a milliseconds duration

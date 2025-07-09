@@ -4,13 +4,14 @@
 import { AnsiLogger } from 'matterbridge/logger';
 import { AEGAPI } from './aegapi.js';
 import { ApplianceId, Appliances } from './aegapi-types.js';
-import { logError, plural } from './utils.js';
+import { plural } from './utils.js';
 import { AEGAPIRX9 } from './aegapi-rx9.js';
 import {
     RX92PowerMode,
     RX9InteractiveMap,
     RX9InteractiveMaps
 } from './aegapi-rx9-types.js';
+import { logError } from './log-error.js';
 
 // A test failure
 interface Failure {

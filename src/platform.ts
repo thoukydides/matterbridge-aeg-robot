@@ -15,8 +15,9 @@ import { checkConfiguration } from './check-configuration.js';
 import { DeviceRX9 } from './device-rx9.js';
 import { PrefixLogger } from './logger.js';
 import { AEGAccount } from './aeg-account.js';
-import { logError, plural } from './utils.js';
+import { plural } from './utils.js';
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js';
+import { logError } from './log-error.js';
 
 // A Matterbridge AEG RX 9 / Electrolux Pure i9 platform
 export class PlatformRX9 extends MatterbridgeDynamicPlatform {
