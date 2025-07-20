@@ -43,6 +43,7 @@
         "OSBP",
         "Pitstop",
         "pncs",
+        "readwrite",
         "Replaceability",
         "roboticvacuumcleaner",
         "schedulable",

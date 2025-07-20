@@ -169,7 +169,7 @@ export interface RX9ApplianceCapabilities {
         min:            1;
     };
     powerMode?: {
-        access:         'read';
+        access:         'read' | 'readwrite';
         type:           'int';
         min:            1;
         max:            3;
