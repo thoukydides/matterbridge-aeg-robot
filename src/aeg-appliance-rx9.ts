@@ -208,6 +208,7 @@ export class AEGApplianceRX9
     updateFromApplianceState(state: RX9ApplianceState): void {
         // Extract the relevant information
         const { reported } = state.properties;
+        const { messageList } = reported;
         this.updateStatus({
             connected:          state.connectionState === 'Connected',
             enabled:            state.status          === 'enabled',
@@ -215,7 +216,7 @@ export class AEGApplianceRX9
             dustbinStatus:      reported.dustbinStatus,
             firmwareVersion:    reported.firmwareVersion,
             robotStatus:        reported.robotStatus,
-            messages:           reported.messageList.messages,
+            messages:           'messages'  in messageList ? messageList.messages : messageList.Messages,
             ecoMode:            'ecoMode'   in reported ? reported.ecoMode   : undefined,
             powerMode:          'powerMode' in reported ? reported.powerMode : undefined
         });

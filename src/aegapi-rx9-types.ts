@@ -98,177 +98,294 @@ export type RX9CleaningCommand =
   | 'pause'
   | 'home';
 
+
+// Cleaning result
+export type RX9Completion =
+    'abortedByUser'
+  | 'cleaningFinishedSuccessful'
+  | 'cleaningFinishedSuccessfulInCharger'
+  | 'cleaningFinishedSuccessfulInStartPose'
+  | 'endedNotFindingCharger'
+  | 'error'
+  | 'robotPowerDown';
+
 // RX9.2 scheduled tasks (not supported by RX9.1)
 export interface RX92Zone {
-    powerMode:          RX92PowerMode;
+    powerMode:                      RX92PowerMode;
 }
 export interface RX92Task {
-    enabled:            boolean;
+    enabled:                        boolean;
     start: {
-        weekDays:       WeekdayLC[];
-        time:           string;     // e.g. '09:00:13'
+        weekDays:                   WeekdayLC[];
+        time:                       string;     // e.g. '09:00:13'
         properties: {
-            zones:      RX92Zone[];
+            zones:                  RX92Zone[];
         }
     }
 }
 export interface RX92Tasks {
-    [index: string]:    RX92Task;
+    [index: string]:                RX92Task;
 }
 
 // GET /api/v1/appliances/{applianceId}/info
 export interface RX9NoTriggers { [index: string]: never };
 export interface RX9ApplianceCapabilities {
     CleaningCommand: {
-        access:         'readwrite';
-        type:           'string';
+        access:                     'readwrite';
+        type:                       'string';
         values: {
             // { [key in RX9CleaningCommand]: object; }
-            play:           RX9NoTriggers;
-            stop:           RX9NoTriggers;
-            pause:          RX9NoTriggers;
-            home:           RX9NoTriggers;
+            play:                   RX9NoTriggers;
+            stop:                   RX9NoTriggers;
+            pause:                  RX9NoTriggers;
+            home:                   RX9NoTriggers;
         }
     };
     robotStatus: {
-        access:         'read';
-        type:           string;
+        access:                     'read';
+        type:                       string;
         values: {
             // { [key in `${RX9RobotStatus}`]: RX9Empty; }
-            1:              RX9NoTriggers;  // Cleaning
-            2:              RX9NoTriggers;  // PausedCleaning
-            3:              RX9NoTriggers;  // SpotCleaning
-            4:              RX9NoTriggers;  // PausedSpotCleaning
-            5:              RX9NoTriggers;  // Return
-            6:              RX9NoTriggers;  // PausedReturn
-            7:              RX9NoTriggers;  // ReturnForPitstop
-            8:              RX9NoTriggers;  // PausedReturnForPitstop
-            9:              RX9NoTriggers;  // Charging
-            10:             RX9NoTriggers;  // Sleeping
-            11:             RX9NoTriggers;  // Error
-            12:             RX9NoTriggers;  // Pitstop
-            13:             RX9NoTriggers;  // ManualSteering
-            14:             RX9NoTriggers;  // FirmwareUpgrade
+            1:                      RX9NoTriggers;  // Cleaning
+            2:                      RX9NoTriggers;  // PausedCleaning
+            3:                      RX9NoTriggers;  // SpotCleaning
+            4:                      RX9NoTriggers;  // PausedSpotCleaning
+            5:                      RX9NoTriggers;  // Return
+            6:                      RX9NoTriggers;  // PausedReturn
+            7:                      RX9NoTriggers;  // ReturnForPitstop
+            8:                      RX9NoTriggers;  // PausedReturnForPitstop
+            9:                      RX9NoTriggers;  // Charging
+            10:                     RX9NoTriggers;  // Sleeping
+            11:                     RX9NoTriggers;  // Error
+            12:                     RX9NoTriggers;  // Pitstop
+            13:                     RX9NoTriggers;  // ManualSteering
+            14:                     RX9NoTriggers;  // FirmwareUpgrade
         }
     };
     dustbinStatus?: {
-        access:         'read';
-        type:           'string';
+        access:                     'read';
+        type:                       'string';
         values: {
             // { [key in Capitalize<RX9Dustbin>]: RX9Empty; }
-            NOTCONNECTED:   RX9NoTriggers;
-            CONNECTED:      RX9NoTriggers;
-            EMPTY:          RX9NoTriggers;
-            FULL:           RX9NoTriggers;
+            NOTCONNECTED:           RX9NoTriggers;
+            CONNECTED:              RX9NoTriggers;
+            EMPTY:                  RX9NoTriggers;
+            FULL:                   RX9NoTriggers;
         }
     };
     batteryStatus?: {
-        access:         'read';
-        type:           'int';
-        max:            6;
-        min:            1;
+        access:                     'read';
+        type:                       'int';
+        max:                        6;
+        min:                        1;
     };
     powerMode?: {
-        access:         'read' | 'readwrite';
-        type:           'int';
-        min:            1;
-        max:            3;
+        access:                     'read' | 'readwrite';
+        type:                       'int';
+        min:                        1;
+        max:                        3;
     };
     'CustomPlay/persistentMapId'?: {
-        access:         'readwrite';
-        type:           'custom';
+        access:                     'readwrite';
+        type:                       'custom';
     };
     'CustomPlay/zones'?: {
-        access:         'readwrite';
-        type:           'custom';
+        access:                     'readwrite';
+        type:                       'custom';
     }
 }
 export interface RX9ApplianceInfo {
-    applianceInfo:      ApplianceInfoDTO;
-    capabilities:       RX9ApplianceCapabilities;
+    applianceInfo:                  ApplianceInfoDTO;
+    capabilities:                   RX9ApplianceCapabilities;
 }
 
 // GET /api/v1/appliances/{applianceId}/state
+export interface RX9Gateway {
+    connectionId:                   string;     // UUID
+    location:                       string;     // e.g. 'west-europe'
+    serverId:                       string;     // UUID
+}
 export interface RX9Message {
-    id:                 number;     // e.g. 1
-    timestamp:          number;     // e.g. 1672820985
-    type:               number;     // e.g. 0
-    userErrorID?:       number;     // e.g. 15
-    internalErrorID?:   number;     // e.g. 10005
-    text:               string;     // e.g. 'Please help me get free'
+    id:                             number;     // e.g. 1
+    internalErrorID?:               number;     // e.g. 10005
+    text:                           string;     // e.g. 'Please help me get free'
+    timestamp:                      number;     // e.g. 1672820985
+    type:                           number;     // e.g. 0
+    userErrorID?:                   number;     // e.g. 15
+}
+export type RX9MessageList =
+    { messages: RX9Message[]; } | { Messages: RX9Message[]; }
+export interface RX9RobotPushMessage {
+    Time:                           string;     // e.g. '2023-12-20T14:10:43+00:00'
+    Type:                           'RVCError',
+    Value:                          string;     // e.g. '10005'
+    Information: {
+        Id:                         string;     // UUID
+        Timestamp:                  string;     // e.g. '2023-12-20T14:10:43+00:00'
+        ServerInstanceId:           string;     // UUID
+    }
+    AreaCovered:                    number | null;
 }
 export interface RX9CapabilitiesObject {
-    [index: string]:    object;     // [key in RX9Capabilities]
+    [index: string]:                object;     // [key in RX9Capabilities]
+}
+export interface RX9CleaningSession {
+    action:                         'update';
+    areaCovered:                    number;     // e.g. 27.900002
+    cleaningDuration:               number;     // e.g. 29900000000
+    completion?:                    RX9Completion;
+    eventTime:                      string;     // e.g '2025-07-29T11:32:41'
+    id:                             string;     // e.g. 'si_832',
+    isTimeReliable:                 boolean;
+    lastUpdate:                     string;     // e.g. '2025-07-29T10:34:31.0182278Z'
+    messageType:                    'normal';
+    persistentMapId?:               string;     // UUID
+    persistentMapSN:                number;     // e.g. 183
+    pitstopCount:                   number;     // e.g. 1
+    pitstopDuration:                number;     // e.g. 21920000000
+    sessionId:                      number;     // e.g. 832
+    startTime:                      string;     // e.g. '2025-07-29T09:00:05',
+    zones?:                         []
+}
+export interface RX9CleaningSessionClosed {
+    CleanedArea:                    number;     // e.g. 27.46
+    CleanedAreaID:                  string;     // UUID
+    CleaningDuration:               number;     // e.g. 39610000000
+    Completion:                     number;     // e.g. 2,
+    Created:                        string;     // e.g. '2025-07-19T08:00:59.74'
+    EndedReason:                    null;
+    EventTime:                      string;     // e.g. '2025-07-20T09:00:04'
+    FirmwareVersion:                string;     // e.g. '43.23'
+    Id:                             number;     // e.g. 85596328
+    IsChargerPoseReliable:          boolean;
+    IsRobotPoseReliable:            boolean;
+    IsTimeReliable:                 boolean;
+    LastUpdate:                     string;     // e.g. '2025-07-20T08:01:05.3757968Z'
+    PersistentMapId:                string;     // UUID
+    PersistentMapSn:                number;     // e.g. 181
+    PitstopCount:                   number;     // e.g. 1
+    PitstopDuration:                number;     // e.g. 22160000000
+    Platform:                       string;     // e.g. '1.01'
+    RobotInternalError:             null;
+    RobotUserError:                 null;
+    SessionID:                      number;     // e.g. 822
+    StartReason:                    'Schedule';
+    StartTime:                      string;     // e.g. '2025-07-19T09:00:04'
+    Zones:                          [];
+    ZoneStatus:                     null;
+}
+export interface RX9MapPoint {
+    t:                              number;     // e.g. 1000
+    xy:                             [number, number]; // e.g. [-0.24129055, 0.31136945]
+}
+export interface RX9MapPointAngle {
+    t?:                             number;     // e.g. 1000
+    xya:                            [number, number, number]; // e.g. [0.05495656, -0.03892141, -0.029699445]
+}
+export interface RX9MapTransform {
+    t:                              number;     // e.g. 1000
+    xya:                            [number, number, number]; // e.g. [0.05495656, -0.03892141, -0.029699445]
+}
+export interface RX9MapZone {
+    uuid:                           string;     // UUID
+    type:                           number;     // e.g. 0
+    vertices:                       [RX9MapPoint, RX9MapPoint, RX9MapPoint, RX9MapPoint];
+}
+export interface RX9MapMatch {
+    sequenceNo:                     number;     // e.g. 183
+    uuid:                           string;     // UUID
+    zones:                          RX9MapZone[];
+
+}
+export interface RX9MapData {
+    chargerPoses:                   RX9MapPointAngle[];
+    cleaningComplete:               number;     // e.g. 1
+    crumbCollectionDelta:           boolean;
+    crumbs?:                        RX9MapPoint[];
+    mapMatch?:                      RX9MapMatch;
+    robotPose:                      RX9MapPointAngle;
+    robotPoseReliable:              boolean;
+    sessionId:                      number;     // e.g. 832
+    timestamp:                      string;     // e.g. '2025-07-29T11:32:40'
+    transforms:                     RX9MapTransform[];
 }
 export interface RX9ApplianceStateReportedBase {
-    availableLanguages: string[];   // e.g. ['deu', 'eng', ...]
-    capabilities:       RX9CapabilitiesObject;
-    batteryStatus:      RX9BatteryStatus;
-    robotStatus:        RX9RobotStatus;
-    messageList: {
-        messages:       RX9Message[];
-    },
-    dustbinStatus:      RX9Dustbin;
-    platform:           string;     // e.g. '1.01'
-    applianceName:      string;     // e.g. 'AEG RX9.2 Robot'
-    firmwareVersion:    string;     // e.g. '43.23'
-    language:           string;     // e.g. 'eng'
-    mute:               boolean;
+    applianceName:                  string;     // e.g. 'AEG RX9.2 Robot'
+    availableLanguages:             string[];   // e.g. ['deu', 'eng', ...]
+    batteryStatus:                  RX9BatteryStatus;
+    capabilities:                   RX9CapabilitiesObject;
+    cleaningSession?:               RX9CleaningSession;
+    cleaningSessionClosed?:         RX9CleaningSessionClosed;
+    deviceId?:                      string;     // e.g. '900277479937001234567890'
+    dustbinStatus:                  RX9Dustbin;
+    firmwareVersion:                string;     // e.g. '43.23'
+    gw?:                            RX9Gateway;
+    language:                       string;     // e.g. 'eng'
+    mapData?:                       RX9MapData;
+    messageList:                    RX9MessageList;
+    mute:                           boolean;
+    nextFirmwareUpgradeAttempt?:    string;     // e.g. '2023-12-20T14:10:43+00:00'
+    persistentMapsCreated?: {
+        mapId:                      string;     // UUID
+    }
+    platform:                       string;     // e.g. '1.01'
+    RobotPushMessage?:              RX9RobotPushMessage;
+    robotStatus:                    RX9RobotStatus;
 }
 export interface RX91ApplianceStateReported extends RX9ApplianceStateReportedBase {
-    ecoMode:            boolean;
+    ecoMode:                        boolean;
 }
 export interface RX92ApplianceStateReported extends RX9ApplianceStateReportedBase {
-    powerMode:          RX92PowerMode;
-    tasks?:             RX92Tasks;
+    powerMode:                      RX92PowerMode;
+    tasks?:                         RX92Tasks;
 }
 export type RX9ApplianceStateReported =
     RX91ApplianceStateReported | RX92ApplianceStateReported;
 export interface RX9ApplianceStateProperties {
-    reported:           RX9ApplianceStateReported;
+    reported:                       RX9ApplianceStateReported;
 }
 export interface RX9ApplianceState {
-    applianceId:        ApplianceId;
-    connectionState:    ConnectionState;
-    status:             ApplianceStatus;
-    properties:         RX9ApplianceStateProperties;
+    applianceId:                    ApplianceId;
+    connectionState:                ConnectionState;
+    status:                         ApplianceStatus;
+    properties:                     RX9ApplianceStateProperties;
 }
 
 // GET /api/v1/appliances/{applianceId}/interactiveMap
 export interface RX9InteractiveMapVertex {
-    x:                  number;
-    y:                  number;
+    x:                              number;
+    y:                              number;
 }
 export interface RX9InteractiveMapZone {
-    name:               string;     // e.g. 'Living Room'
-    id:                 string;     // UUID
-    zoneType:           RX9ZoneType;
-    vertices:           RX9InteractiveMapVertex[];
-    roomCategory:       RX9RoomCategory;
-    powerMode:          RX92PowerMode | null;
+    name:                           string;     // e.g. 'Living Room'
+    id:                             string;     // UUID
+    zoneType:                       RX9ZoneType;
+    vertices:                       RX9InteractiveMapVertex[];
+    roomCategory:                   RX9RoomCategory;
+    powerMode:                      RX92PowerMode | null;
 }
 export interface RX9InteractiveMap {
-    name:               string;     // e.g. 'Home'
-    id:                 string;     // UUID
-    timestamp:          string;     // e.g. '2023-12-20T14:10:43+00:00'
-    rotation:           number;     // e.g. 0
-    zones:              RX9InteractiveMapZone[];
+    name:                           string;     // e.g. 'Home'
+    id:                             string;     // UUID
+    timestamp:                      string;     // e.g. '2023-12-20T14:10:43+00:00'
+    rotation:                       number;     // e.g. 0
+    zones:                          RX9InteractiveMapZone[];
 }
 export type RX9InteractiveMaps = RX9InteractiveMap[];
 
 // PUT /api/v1/appliances/{applianceId}/command
 export interface RX9CommandCleaning {
-    CleaningCommand:    RX9CleaningCommand;
+    CleaningCommand:                RX9CleaningCommand;
 }
 export interface RX9CommandCustomPlayZone {
-    zoneId:             string;     // UUID
-    powerMode:          RX92PowerMode;
+    zoneId:                         string;     // UUID
+    powerMode:                      RX92PowerMode;
 }
 export interface RX9CustomPlayMapZones {
-    persistentMapId:    string; // UUID
-    zones:              RX9CommandCustomPlayZone[];
+    persistentMapId:                string;     // UUID
+    zones:                          RX9CommandCustomPlayZone[];
 }
 export interface RX9CommandCustomPlay {
-    CustomPlay:        RX9CustomPlayMapZones;
+    CustomPlay:                     RX9CustomPlayMapZones;
 }
 export type RX9Command = RX9CommandCleaning | RX9CommandCustomPlay;
