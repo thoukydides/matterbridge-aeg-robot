@@ -16,7 +16,8 @@ const SPAWN_ARGS = ['node_modules/matterbridge/dist/cli.js'];
 // Plugin configuration file for running tests
 const PLUGIN_CONFIG_FILE = '.matterbridge/matterbridge-aeg-robot.config.json';
 const PLUGIN_CONFIG_CONTENT: Partial<Config> = {
-    'debugFeatures': [
+    debug: true,
+    debugFeatures: [
         'Run API Tests'
     ]
 };
@@ -32,7 +33,7 @@ const SUCCESS_TESTS: Test[] = [
     { name: 'Configured',   regexp: /\[AEG Robot\] Configured [1-9]\d* robot vacuum device/ }
 ];
 const FAILURE_TESTS: Test[] = [
-    { name: 'API Checker',  regexp: / (GET|PUT|POST) \// }
+    { name: 'API Checker',  regexp: /\[AEG Robot\] Unexpected .* Electrolux Group API response/ }
 ];
 
 // Match ANSI colour codes so that they can be stripped
