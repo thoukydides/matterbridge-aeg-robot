@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v1.1.4] - 2025-07-29
+### Changed
+* Accept additional `/api/v1/appliances/{applianceId}/state` properties returned by recent changes to the API.
+* Updated dependencies.
+
 ## [v1.1.3] - 2025-07-20
 ### Changed
 * Accept `readwrite` access for the API's `powerMode` capability.
@@ -66,7 +71,8 @@ All notable changes to this project will be documented in this file.
 
 Copyright © 2025 Alexander Thoukydides
 
-[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.3...HEAD
+[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.4...HEAD
+[v1.1.4]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.3...v1.1.4
 [v1.1.3]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.2...v1.1.3
 [v1.1.2]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.1...v1.1.2
 [v1.1.1]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.0...v1.1.1
