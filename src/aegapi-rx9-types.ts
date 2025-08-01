@@ -217,8 +217,8 @@ export type RX9MessageList =
     { messages: RX9Message[]; } | { Messages: RX9Message[]; }
 export interface RX9RobotPushMessage {
     Time:                           string;     // e.g. '2023-12-20T14:10:43+00:00'
-    Type:                           'RVCError',
-    Value:                          string;     // e.g. '10005'
+    Type:                           string;     // e.g. 'RVCError' or 'ScheduleCleaningStarted'
+    Value:                          string;     // e.g. '10005' or 'Started'
     Information: {
         Id:                         string;     // UUID
         Timestamp:                  string;     // e.g. '2023-12-20T14:10:43+00:00'
