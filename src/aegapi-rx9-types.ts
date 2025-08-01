@@ -235,7 +235,7 @@ export interface RX9CleaningSessionZone {
 }
 export interface RX9CleaningSessionZoneStatus {
     id:                             string;     // UUID
-    status:                         'started' | 'terminated';
+    status:                         'idle' | 'started' | 'finished' | 'terminated';
     powerMode:                      RX92PowerMode;
 }
 export interface RX9CleaningSession {
