@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v1.1.6] - 2025-08-01
+### Changed
+* More `/api/v1/appliances/{applianceId}/state` message updates for zone cleaning.
+
 ## [v1.1.5] - 2025-08-01
 ### Changed
 * Accept additional `/api/v1/appliances/{applianceId}/state` messages returned by the API.
@@ -76,7 +80,8 @@ All notable changes to this project will be documented in this file.
 
 Copyright © 2025 Alexander Thoukydides
 
-[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.5...HEAD
+[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.6...HEAD
+[v1.1.6]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.5...v1.1.6
 [v1.1.5]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.4...v1.1.5
 [v1.1.4]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.3...v1.1.4
 [v1.1.3]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.2...v1.1.3
