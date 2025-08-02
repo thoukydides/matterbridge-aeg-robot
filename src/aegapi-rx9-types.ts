@@ -76,11 +76,6 @@ export enum RX9RoomCategory {
     Other                   = 10
 }
 
-// Interactive map zone behaviour
-export type RX9ZoneType =
-    'clean'
-  | 'avoid';
-
 // Functionality supported by the AEG RX9.1 and RX9.2
 export type RX9Capabilities =
     'EcoMode'               // RX9.1 models (2 levels via ecoMode)
@@ -233,7 +228,7 @@ export interface RX9CleaningSessionZone {
 }
 export interface RX9CleaningSessionZoneStatus {
     id:                             string;     // UUID
-    status:                         'idle' | 'started' | 'finished' | 'terminated';
+    status:                         'idle' | 'approaching' | 'started' | 'finished' | 'terminated';
     powerMode:                      RX92PowerMode;
 }
 export interface RX9CleaningSession {
