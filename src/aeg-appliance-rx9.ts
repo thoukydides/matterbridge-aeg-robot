@@ -216,7 +216,7 @@ export class AEGApplianceRX9
             dustbinStatus:      reported.dustbinStatus,
             firmwareVersion:    reported.firmwareVersion,
             robotStatus:        reported.robotStatus,
-            messages:           'messages'  in messageList ? messageList.messages : messageList.Messages,
+            messages:           messageList.messages,
             ecoMode:            'ecoMode'   in reported ? reported.ecoMode   : undefined,
             powerMode:          'powerMode' in reported ? reported.powerMode : undefined
         });

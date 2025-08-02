@@ -129,7 +129,7 @@ export interface RX92Tasks {
 // GET /api/v1/appliances/{applianceId}/info
 export interface RX9NoTriggers { [index: string]: never };
 export interface RX9ApplianceCapabilities {
-    CleaningCommand: {
+    cleaningCommand: {
         access:                     'readwrite';
         type:                       'string';
         values: {
@@ -184,11 +184,11 @@ export interface RX9ApplianceCapabilities {
         min:                        1;
         max:                        3;
     };
-    'CustomPlay/persistentMapId'?: {
+    'customPlay/persistentMapId'?: {
         access:                     'readwrite';
         type:                       'custom';
     };
-    'CustomPlay/zones'?: {
+    'customPlay/zones'?: {
         access:                     'readwrite';
         type:                       'custom';
     }
@@ -206,24 +206,22 @@ export interface RX9Gateway {
 }
 export interface RX9Message {
     id:                             number;     // e.g. 1
-    internalErrorID?:               number;     // e.g. 10005
+    internalErrorId?:               number;     // e.g. 10005
     text:                           string;     // e.g. 'Please help me get free'
     timestamp:                      number;     // e.g. 1672820985
     type:                           number;     // e.g. 0
-    userErrorID?:                   number;     // e.g. 15
+    userErrorId?:                   number;     // e.g. 15
 }
-export type RX9MessageList =
-    { messages: RX9Message[]; } | { Messages: RX9Message[]; }
 export interface RX9RobotPushMessage {
-    Time:                           string;     // e.g. '2023-12-20T14:10:43+00:00'
-    Type:                           string;     // e.g. 'RVCError' or 'ScheduleCleaningStarted'
-    Value:                          string;     // e.g. '10005' or 'Started'
-    Information: {
-        Id:                         string;     // UUID
-        Timestamp:                  string;     // e.g. '2023-12-20T14:10:43+00:00'
-        ServerInstanceId:           string;     // UUID
+    time:                           string;     // e.g. '2023-12-20T14:10:43+00:00'
+    type:                           string;     // e.g. 'RVCError' or 'ScheduleCleaningStarted'
+    value:                          string;     // e.g. '10005' or 'Started'
+    information: {
+        id:                         string;     // UUID
+        timestamp:                  string;     // e.g. '2023-12-20T14:10:43+00:00'
+        serverInstanceId:           string;     // UUID
     }
-    AreaCovered:                    number | null;
+    areaCovered:                    number | null;
 }
 export interface RX9CapabilitiesObject {
     [index: string]:                object;     // [key in RX9Capabilities]
@@ -252,37 +250,39 @@ export interface RX9CleaningSession {
     persistentMapSN:                number;     // e.g. 183
     pitstopCount:                   number;     // e.g. 1
     pitstopDuration:                number;     // e.g. 21920000000
+    robotInternalError?:            number;     // e.g. 10005
+    robotUserError?:                number;     // e.g. 15
     sessionId:                      number;     // e.g. 832
-    startTime:                      string;     // e.g. '2025-07-29T09:00:05',
+    startTime:                      string;     // e.g. '2025-07-29T09:00:05'
     zones?:                         RX9CleaningSessionZone[];
     zoneStatus?:                    RX9CleaningSessionZoneStatus[];
 }
 export interface RX9CleaningSessionClosed {
-    CleanedArea:                    number;     // e.g. 27.46
-    CleanedAreaID:                  string;     // UUID
-    CleaningDuration:               number;     // e.g. 39610000000
-    Completion:                     number;     // e.g. 2,
-    Created:                        string;     // e.g. '2025-07-19T08:00:59.74'
-    EndedReason:                    null;
-    EventTime:                      string;     // e.g. '2025-07-20T09:00:04'
-    FirmwareVersion:                string;     // e.g. '43.23'
-    Id:                             number;     // e.g. 85596328
-    IsChargerPoseReliable:          boolean;
-    IsRobotPoseReliable:            boolean;
-    IsTimeReliable:                 boolean;
-    LastUpdate:                     string;     // e.g. '2025-07-20T08:01:05.3757968Z'
-    PersistentMapId:                string;     // UUID
-    PersistentMapSn:                number;     // e.g. 181
-    PitstopCount:                   number;     // e.g. 1
-    PitstopDuration:                number;     // e.g. 22160000000
-    Platform:                       string;     // e.g. '1.01'
-    RobotInternalError:             null;
-    RobotUserError:                 null;
-    SessionID:                      number;     // e.g. 822
-    StartReason:                    'Schedule';
-    StartTime:                      string;     // e.g. '2025-07-19T09:00:04'
-    Zones:                          [];
-    ZoneStatus:                     null;
+    cleanedArea:                    number;     // e.g. 27.46
+    cleanedAreaId:                  string;     // UUID
+    cleaningDuration:               number;     // e.g. 39610000000
+    completion:                     number;     // e.g. 2,
+    created:                        string;     // e.g. '2025-07-19T08:00:59.74'
+    endedReason:                    null;
+    eventTime:                      string;     // e.g. '2025-07-20T09:00:04'
+    firmwareVersion:                string;     // e.g. '43.23'
+    id:                             number;     // e.g. 85596328
+    isChargerPoseReliable:          boolean;
+    isRobotPoseReliable:            boolean;
+    isTimeReliable:                 boolean;
+    lastUpdate:                     string;     // e.g. '2025-07-20T08:01:05.3757968Z'
+    persistentMapId:                string;     // UUID
+    persistentMapSn:                number;     // e.g. 181
+    pitstopCount:                   number;     // e.g. 1
+    pitstopDuration:                number;     // e.g. 22160000000
+    platform:                       string;     // e.g. '1.01'
+    robotInternalError:             null;
+    robotUserError:                 null;
+    sessionId:                      number;     // e.g. 822
+    startReason:                    'Schedule';
+    startTime:                      string;     // e.g. '2025-07-19T09:00:04'
+    zones:                          [];
+    zoneStatus:                     null;
 }
 export interface RX9MapPoint {
     t:                              number;     // e.g. 1000
@@ -337,14 +337,16 @@ export interface RX9ApplianceStateReportedBase {
     gw?:                            RX9Gateway;
     language:                       string;     // e.g. 'eng'
     mapData?:                       RX9MapData;
-    messageList:                    RX9MessageList;
+    messageList: {
+        messages:                   RX9Message[];
+    }
     mute:                           boolean;
     nextFirmwareUpgradeAttempt?:    string;     // e.g. '2023-12-20T14:10:43+00:00'
     persistentMapsCreated?: {
         mapId:                      string;     // UUID
     }
     platform:                       string;     // e.g. '1.01'
-    RobotPushMessage?:              RX9RobotPushMessage;
+    robotPushMessage?:              RX9RobotPushMessage;
     robotStatus:                    RX9RobotStatus;
 }
 export interface RX91ApplianceStateReported extends RX9ApplianceStateReportedBase {

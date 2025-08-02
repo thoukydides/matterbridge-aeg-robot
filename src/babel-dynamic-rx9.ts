@@ -124,7 +124,7 @@ export const BABEL_DYNAMIC_RX9 = {
             else if (!enabled)              throw new Error('Appliance not enabled');
 
             // Attempt to identify known error messages
-            if (messages.some(m => m.type === 0 && (m.userErrorID === 15 || m.internalErrorID === 10005))) {
+            if (messages.some(m => m.type === 0 && (m.userErrorId === 15 || m.internalErrorId === 10005))) {
                 throw new RvcOperationalStateError.Stuck(); // 'Please help me get free'
             }
 

@@ -137,11 +137,11 @@ export class AEGUserAgent {
             throw new AEGAPIError(request, response, `Unexpected response content-type (${JSON.stringify(contentType)})`);
         }
 
-        // Parse the response as JSON
+        // Parse the response as JSON and normalise property names
         let json: unknown;
         try {
             this.logBody('Response', text);
-            json = JSON.parse(text);
+            json = normaliseKeys(JSON.parse(text));
         } catch (cause) {
             throw new AEGAPIError(request, response, `Failed to parse JSON response (${String(cause)})`, { cause });
         }
@@ -309,4 +309,33 @@ export class AEGUserAgent {
         const jsonLines = inspect(json, INSPECT_VERBOSE).split('\n');
         jsonLines.forEach(line => { this.log.info(`    ${line}`); });
     }
+}
+
+// Convert a string from PascalCase to camelCase with word-cased acronyms
+function pascalToCamelCase(str: string): string {
+    const acronyms = ['ID'];
+
+    // Ignore all upper-case (and empty) strings
+    if (str === str.toUpperCase() && !acronyms.includes(str)) return str;
+
+    // Convert known acronyms to word-cased form
+    str = acronyms.reduce((s, acronym) => {
+        const regex = new RegExp(`${acronym}(?![a-z])`, 'g');
+        return s.replace(regex, acronym.charAt(0) + acronym.slice(1).toLowerCase());
+    }, str);
+
+    // Finally convert PascalCase to camelCase
+    return str.charAt(0).toLowerCase() + str.slice(1);
+}
+
+// Recursively convert property names from PascalCase to camelCase
+function normaliseKeys(obj: unknown): unknown {
+    if (Array.isArray(obj)) {
+        return obj.map(item => normaliseKeys(item));
+    }
+    if (obj !== null && typeof obj === 'object') {
+        return Object.fromEntries(Object.entries(obj).map(([key, value]) =>
+            [pascalToCamelCase(key), normaliseKeys(value)]));
+    }
+    return obj;
 }

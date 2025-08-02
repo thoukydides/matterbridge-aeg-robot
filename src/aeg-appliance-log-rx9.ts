@@ -139,8 +139,8 @@ export class AEGApplianceRX9Log {
         this.appliance.on('message', (message: RX9Message) => {
             const age = `${formatMilliseconds(Date.now() - message.timestamp * MS)} ago`;
             const bits = [`type=${message.type}`];
-            if (message.userErrorID)     bits.push(`user-error=${message.userErrorID}`);
-            if (message.internalErrorID) bits.push(`internal-error=${message.internalErrorID}`);
+            if (message.userErrorId)     bits.push(`user-error=${message.userErrorId}`);
+            if (message.internalErrorId) bits.push(`internal-error=${message.internalErrorId}`);
             this.log.warn(`Message: ${message.text} (${age})`);
             this.log.debug(`Message: ${formatList(bits)}`);
         });
