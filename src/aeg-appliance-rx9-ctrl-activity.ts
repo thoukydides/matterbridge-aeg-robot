@@ -6,7 +6,7 @@ import { RX9CleaningCommand, RX9RobotStatus } from './aegapi-rx9-types.js';
 import { AEGApplianceRX9Ctrl } from './aeg-appliance-rx9-ctrl.js';
 import { formatList, formatMilliseconds, MS, plural } from './utils.js';
 import { setTimeout } from 'node:timers/promises';
-import { CC, RR } from './logger.js';
+import { CC, RR } from './logger-options.js';
 
 // Expected result of starting an activity (true = no-op, undefined = invalid)
 type StatusName = keyof typeof RX9RobotStatus

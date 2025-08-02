@@ -16,6 +16,8 @@ import {
 import { columns, getValidationTree, MS } from './utils.js';
 import { Config } from './config-types.js';
 import NodePersist from 'node-persist';
+import { INSPECT_VERBOSE } from './logger-options.js';
+import { inspect } from 'util';
 
 export type Binary     = Dispatcher.ResponseData['body'];
 export type Response   = Dispatcher.ResponseData;
@@ -304,7 +306,7 @@ export class AEGUserAgent {
         const validationLines = getValidationTree(errors);
         validationLines.forEach(line => { this.log.log(level, line); });
         this.log.debug('Received response (reformatted):');
-        const jsonLines = JSON.stringify(json, null, 4).split('\n');
-        jsonLines.forEach(line => { this.log.debug(`    ${line}`); });
+        const jsonLines = inspect(json, INSPECT_VERBOSE).split('\n');
+        jsonLines.forEach(line => { this.log.info(`    ${line}`); });
     }
 }

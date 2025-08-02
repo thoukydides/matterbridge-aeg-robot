@@ -25,7 +25,7 @@ import {
 import { isDeepStrictEqual } from 'util';
 import { formatSeconds, MS } from './utils.js';
 import { ActivityRX9 } from './aeg-appliance-rx9-ctrl-activity.js';
-import { AN, AV, CN, CV, RR } from './logger.js';
+import { AN, AV, CN, CV, RR } from './logger-options.js';
 import {
     BasicInformationServer,
     BridgedDeviceBasicInformationServer

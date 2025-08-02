@@ -8,6 +8,8 @@ import { IErrorDetail } from 'ts-interface-checker';
 import { deepMerge, getValidationTree } from './utils.js';
 import { DEFAULT_CONFIG, PLUGIN_NAME } from './settings.js';
 import { Config } from './config-types.js';
+import { inspect } from 'util';
+import { INSPECT_VERBOSE } from './logger-options.js';
 
 // Check that the configuration is valid
 export function checkConfiguration(log: AnsiLogger, config: PlatformConfig): asserts config is Config & PlatformConfig {
@@ -36,6 +38,6 @@ function logCheckerValidation(log: AnsiLogger, config: PlatformConfig, level: Lo
     const errorLines = errors ? getValidationTree(errors) : [];
     errorLines.forEach(line => { log.log(level, line); });
     log.info(`${PLUGIN_NAME}.config.json:`);
-    const configLines = JSON.stringify(config, null, 4).split('\n');
+    const configLines = inspect(config, INSPECT_VERBOSE).split('\n');
     configLines.forEach(line => { log.info(`    ${line}`); });
 }

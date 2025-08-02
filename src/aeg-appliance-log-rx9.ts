@@ -11,7 +11,7 @@ import {
     RX92PowerMode,
     RX9RobotStatus
 } from './aegapi-rx9-types.js';
-import { RR, RT, RV } from './logger.js';
+import { RR, RT, RV } from './logger-options.js';
 
 // Descriptions of the robot activity
 const activityNames: Record<RX9RobotStatus, string | null> = {
