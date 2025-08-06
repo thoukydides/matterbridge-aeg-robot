@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v1.1.9] - 2025-08-06
+### Changed
+* Accept additional properties returned by recent API changes.
+
 ## [v1.1.8] - 2025-08-02
 ### Changed
-* More `/api/v1/appliances/{applianceId}/state` message updates for zone cleaning.
+* Accept additional properties returned by recent API changes.
 
 ## [v1.1.7] - 2025-08-02
 ### Changed
@@ -14,16 +18,16 @@ All notable changes to this project will be documented in this file.
 
 ## [v1.1.6] - 2025-08-01
 ### Changed
-* More `/api/v1/appliances/{applianceId}/state` message updates for zone cleaning.
+* Accept additional properties returned by recent API changes.
 
 ## [v1.1.5] - 2025-08-01
 ### Changed
-* Accept additional `/api/v1/appliances/{applianceId}/state` messages returned by the API.
+* Accept additional properties returned by recent API changes.
 * Updated dependencies.
 
 ## [v1.1.4] - 2025-07-29
 ### Changed
-* Accept additional `/api/v1/appliances/{applianceId}/state` properties returned by recent changes to the API.
+* Accept additional properties returned by recent API changes.
 * Updated dependencies.
 
 ## [v1.1.3] - 2025-07-20
@@ -88,7 +92,8 @@ All notable changes to this project will be documented in this file.
 
 Copyright © 2025 Alexander Thoukydides
 
-[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.8...HEAD
+[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.9...HEAD
+[v1.1.9]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.8...v1.1.9
 [v1.1.8]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.7...v1.1.8
 [v1.1.7]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.6...v1.1.7
 [v1.1.6]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.5...v1.1.6
