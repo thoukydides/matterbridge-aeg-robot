@@ -161,10 +161,10 @@ export interface RX9ApplianceCapabilities {
         type:                       'string';
         values: {
             // { [key in Capitalize<RX9Dustbin>]: RX9Empty; }
-            NOTCONNECTED:           RX9NoTriggers;
-            CONNECTED:              RX9NoTriggers;
-            EMPTY:                  RX9NoTriggers;
-            FULL:                   RX9NoTriggers;
+            notconnected:           RX9NoTriggers;
+            connected:              RX9NoTriggers;
+            empty:                  RX9NoTriggers;
+            full:                   RX9NoTriggers;
         }
     };
     batteryStatus?: {
@@ -252,6 +252,17 @@ export interface RX9CleaningSession {
     zones?:                         RX9CleaningSessionZone[];
     zoneStatus?:                    RX9CleaningSessionZoneStatus[];
 }
+export interface RX9CleaningSessionClosedZone {
+    id:                             string;     // UUID
+    name:                           null;
+    type:                           number;     // e.g. 0
+    vertices:                       [RX9InteractiveMapVertex, RX9InteractiveMapVertex, RX9InteractiveMapVertex, RX9InteractiveMapVertex];
+}
+export interface RX9CleaningSessionClosedZoneStatus {
+    id:                             string;     // UUID
+    status:                         number;
+    powerMode:                      RX92PowerMode;
+}
 export interface RX9CleaningSessionClosed {
     cleanedArea:                    number;     // e.g. 27.46
     cleanedAreaId:                  string;     // UUID
@@ -274,10 +285,10 @@ export interface RX9CleaningSessionClosed {
     robotInternalError:             null;
     robotUserError:                 null;
     sessionId:                      number;     // e.g. 822
-    startReason:                    'Schedule';
+    startReason:                    'App' | 'Schedule';
     startTime:                      string;     // e.g. '2025-07-19T09:00:04'
-    zones:                          [];
-    zoneStatus:                     null;
+    zones:                          RX9CleaningSessionClosedZone[];
+    zoneStatus:                     RX9CleaningSessionClosedZoneStatus[] | null;
 }
 export interface RX9MapPoint {
     t:                              number;     // e.g. 1000

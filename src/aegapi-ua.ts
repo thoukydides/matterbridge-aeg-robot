@@ -313,19 +313,17 @@ export class AEGUserAgent {
 
 // Convert a string from PascalCase to camelCase with word-cased acronyms
 function pascalToCamelCase(str: string): string {
-    const acronyms = ['ID'];
-
-    // Ignore all upper-case (and empty) strings
-    if (str === str.toUpperCase() && !acronyms.includes(str)) return str;
+    if (str === '') return str;
 
     // Convert known acronyms to word-cased form
+    const acronyms = ['ID'];
     str = acronyms.reduce((s, acronym) => {
         const regex = new RegExp(`${acronym}(?![a-z])`, 'g');
         return s.replace(regex, acronym.charAt(0) + acronym.slice(1).toLowerCase());
     }, str);
 
     // Finally convert PascalCase to camelCase
-    return str.charAt(0).toLowerCase() + str.slice(1);
+    return str.replace(/^([A-Z]+)/, (match) => match.toLowerCase());
 }
 
 // Recursively convert property names from PascalCase to camelCase
