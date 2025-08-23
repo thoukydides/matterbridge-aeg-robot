@@ -201,6 +201,7 @@ export class AEGAuthoriseUserAgent extends AEGUserAgent {
                 const signal = options?.signal;
                 if (signal !== undefined) {
                     if (signal.aborted) throw signal.reason;
+                    // eslint-disable-next-line @typescript-eslint/only-throw-error
                     promises.push((async (): Promise<never> => { throw await once(signal, 'abort'); })());
                 }
                 await Promise.race(promises);
