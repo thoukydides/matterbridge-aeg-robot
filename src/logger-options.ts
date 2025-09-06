@@ -35,5 +35,5 @@ export const INSPECT_VERBOSE: InspectOptions = {
     breakLength:        80,
     compact:            3,
     sorted:             true,
-    numericSeparator:   true
+    numericSeparator:   false
 };
