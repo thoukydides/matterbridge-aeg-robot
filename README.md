@@ -234,7 +234,7 @@ Matter controllers vary in their support for Matter 1.4 RVCs. This plugin is onl
 
 | 🚧 Electrolux Group API – DAM (Digital Appliance Model) |
 | --- |
-| *Electrolux have [announced](https://developer.electrolux.one/news) a transition of their API data model to a “Digital Appliance Model” (DAM). Based on the information currently available, this change is expected to break compatibility with this plugin (and other integrations using the Electrolux Group API); updates will be required to restore functionality.*<br>*It is not yet clear when (or even whether) legacy products such as the AEG RX9 / Electrolux Pure i9 robot vacuums will be migrated to this new model.*<br>*If you begin seeing log messages such as `Ignoring 1 incompatible appliance`, and the listed appliance type includes a `DAM_` prefix, please [open an issue](https://github.com/thoukydides/matterbridge-aeg-robot/issues/new/choose). Include a debug log captured using both the `Run API Tests` and `Log API Bodies` debug options.* |
+| *Electrolux have [announced](https://developer.electrolux.one/news) a transition of their API data model to a "Digital Appliance Model" (DAM). Based on the information currently available, this change is expected to break compatibility with this plugin (and other integrations using the Electrolux Group API); updates will be required to restore functionality.*<br>*It is not yet clear when (or even whether) legacy products such as the AEG RX9 / Electrolux Pure i9 robot vacuums will be migrated to this new model.*<br>*If you begin seeing log messages such as `Ignoring 1 incompatible appliance`, and the listed appliance type includes a `DAM_` prefix, please [open an issue](https://github.com/thoukydides/matterbridge-aeg-robot/issues/new/choose). Include a debug log captured using both the `Run API Tests` and `Log API Bodies` debug options.* |
 
 <details>
 <summary>Apple Home Limitations</summary>
@@ -254,8 +254,6 @@ Other quirks in the Home app:
 ## Changelog
 
 All notable changes to this project are documented in [`CHANGELOG.md`](CHANGELOG.md).
-
-⚠️ Version 1.1.0 enables Matterbridge `server` mode for robot vacuum cleaners. This removes the requirement from previous versions to run separate Matterbridge instances for each robot vacuum when used with the Apple Home app.
 
 ## Reporting Issues
           
