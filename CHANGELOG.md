@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v1.1.12] - 2025-09-07
+### Fixed
+* Accept `Nav` for the API's `endedReason` property. (#8)
+
 ## [v1.1.11] - 2025-09-06
 ### Changed
 * Updated dependencies.
@@ -100,7 +104,8 @@ All notable changes to this project will be documented in this file.
 
 Copyright © 2025 Alexander Thoukydides
 
-[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.11...HEAD
+[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.12...HEAD
+[v1.1.12]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.11...v1.1.12
 [v1.1.11]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.10...v1.1.11
 [v1.1.10]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.9...v1.1.10
 [v1.1.9]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.8...v1.1.9
