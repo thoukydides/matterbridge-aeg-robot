@@ -287,7 +287,7 @@ export interface RX9CleaningSessionClosed {
     sessionId:                      number;     // e.g. 822
     startReason:                    'App' | 'Schedule';
     startTime:                      string;     // e.g. '2025-07-19T09:00:04'
-    zones:                          RX9CleaningSessionClosedZone[];
+    zones:                          RX9CleaningSessionClosedZone[] | null;
     zoneStatus:                     RX9CleaningSessionClosedZoneStatus[] | null;
 }
 export interface RX9MapPoint {
