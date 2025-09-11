@@ -273,11 +273,11 @@ export interface RX9CleaningSessionClosed {
     eventTime:                      string;     // e.g. '2025-07-20T09:00:04'
     firmwareVersion:                string;     // e.g. '43.23'
     id:                             number;     // e.g. 85596328
-    isChargerPoseReliable:          boolean;
-    isRobotPoseReliable:            boolean;
+    isChargerPoseReliable:          boolean | null;
+    isRobotPoseReliable:            boolean | null;
     isTimeReliable:                 boolean;
     lastUpdate:                     string;     // e.g. '2025-07-20T08:01:05.3757968Z'
-    persistentMapId:                string;     // UUID
+    persistentMapId:                string | null; // UUID
     persistentMapSn:                number;     // e.g. 181
     pitstopCount:                   number;     // e.g. 1
     pitstopDuration:                number;     // e.g. 22160000000
