@@ -269,7 +269,7 @@ export interface RX9CleaningSessionClosed {
     cleaningDuration:               number;     // e.g. 39610000000
     completion:                     number;     // e.g. 2,
     created:                        string;     // e.g. '2025-07-19T08:00:59.74'
-    endedReason:                    'Nav' | null;
+    endedReason:                    'AbortedByUser' | 'Nav' | null;
     eventTime:                      string;     // e.g. '2025-07-20T09:00:04'
     firmwareVersion:                string;     // e.g. '43.23'
     id:                             number;     // e.g. 85596328
