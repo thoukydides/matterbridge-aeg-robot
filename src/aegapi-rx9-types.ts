@@ -232,15 +232,15 @@ export interface RX9CleaningSessionZoneStatus {
     powerMode:                      RX92PowerMode;
 }
 export interface RX9CleaningSession {
-    action:                         'update';
-    areaCovered:                    number;     // e.g. 27.900002
+    action:                         'update' | 'delete';
+    areaCovered?:                   number;     // e.g. 27.900002
     cleaningDuration:               number;     // e.g. 29900000000
     completion?:                    RX9Completion;
     eventTime:                      string;     // e.g '2025-07-29T11:32:41'
     id:                             string;     // e.g. 'si_832',
     isTimeReliable:                 boolean;
     lastUpdate:                     string;     // e.g. '2025-07-29T10:34:31.0182278Z'
-    messageType:                    'normal';
+    messageType:                    'normal' | 'errorRemoved';
     persistentMapId?:               string;     // UUID
     persistentMapSN:                number;     // e.g. 183
     pitstopCount:                   number;     // e.g. 1
@@ -269,7 +269,7 @@ export interface RX9CleaningSessionClosed {
     cleaningDuration:               number;     // e.g. 39610000000
     completion:                     number;     // e.g. 2,
     created:                        string;     // e.g. '2025-07-19T08:00:59.74'
-    endedReason:                    'AbortedByUser' | 'Nav' | null;
+    endedReason:                    'AbortedByUser' | 'Nav' | 'Unknown' | null;
     eventTime:                      string;     // e.g. '2025-07-20T09:00:04'
     firmwareVersion:                string;     // e.g. '43.23'
     id:                             number;     // e.g. 85596328
