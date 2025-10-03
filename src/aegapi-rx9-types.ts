@@ -285,7 +285,7 @@ export interface RX9CleaningSessionClosed {
     robotInternalError:             null;
     robotUserError:                 null;
     sessionId:                      number;     // e.g. 822
-    startReason:                    'App' | 'Schedule';
+    startReason:                    'App' | 'Schedule' | 'Ui';
     startTime:                      string;     // e.g. '2025-07-19T09:00:04'
     zones:                          RX9CleaningSessionClosedZone[] | null;
     zoneStatus:                     RX9CleaningSessionClosedZoneStatus[] | null;
