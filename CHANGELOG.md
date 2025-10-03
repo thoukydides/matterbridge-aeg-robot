@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v1.1.16] - 2025-10-03
+### Fixed
+* Accept additional property values returned by recent API changes. (#10)
+
 ## [v1.1.15] - 2025-10-02
 ### Fixed
 * Accept additional property values returned by recent API changes. (#10)
@@ -120,7 +124,8 @@ All notable changes to this project will be documented in this file.
 
 Copyright © 2025 Alexander Thoukydides
 
-[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.15...HEAD
+[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.16...HEAD
+[v1.1.16]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.15...v1.1.16
 [v1.1.15]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.14...v1.1.15
 [v1.1.14]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.13...v1.1.14
 [v1.1.13]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.12...v1.1.13
