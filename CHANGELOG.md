@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v1.1.17] - 2025-10-04
+### Changed
+* Compatibility with Matterbridge version 3.4.0.
+* Updated dependencies.
+
 ## [v1.1.16] - 2025-10-03
 ### Fixed
 * Accept additional property values returned by recent API changes. (#10)
@@ -124,8 +129,8 @@ All notable changes to this project will be documented in this file.
 
 Copyright © 2025 Alexander Thoukydides
 
-[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.16...HEAD
-[v1.1.16]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.15...v1.1.16
+[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.17...HEAD
+[v1.1.17]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.16...v1.1.17
 [v1.1.15]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.14...v1.1.15
 [v1.1.14]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.13...v1.1.14
 [v1.1.13]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.12...v1.1.13
