@@ -2,9 +2,9 @@
 // Copyright © 2025 Alexander Thoukydides
 
 import {
-    Matterbridge,
     MatterbridgeDynamicPlatform,
-    PlatformConfig
+    PlatformConfig,
+    PlatformMatterbridge
 } from 'matterbridge';
 import { AnsiLogger, LogLevel } from 'matterbridge/logger';
 import NodePersist from 'node-persist';
@@ -32,7 +32,7 @@ export class PlatformRX9 extends MatterbridgeDynamicPlatform {
     devices:        DeviceRX9[] = [];
 
     // Constructor
-    constructor(matterbridge: Matterbridge, log: AnsiLogger, config: PlatformConfig) {
+    constructor(matterbridge: PlatformMatterbridge, log: AnsiLogger, config: PlatformConfig) {
         log.logName = PLATFORM_NAME;
         const prefixLog = new PrefixLogger(log);
         prefixLog.info(`Initialising platform ${PLUGIN_NAME}`);
