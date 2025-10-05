@@ -385,7 +385,7 @@ export interface RX9InteractiveMapZone {
     zoneType:                       'clean' | 'avoid';
     vertices:                       [RX9InteractiveMapVertex, RX9InteractiveMapVertex, RX9InteractiveMapVertex, RX9InteractiveMapVertex];
     roomCategory:                   RX9RoomCategory;
-    powerMode:                      RX92PowerMode | null;
+    powerMode:                      RX92PowerMode | 0 | null;
 }
 export interface RX9InteractiveMap {
     name:                           string;     // e.g. 'Home'

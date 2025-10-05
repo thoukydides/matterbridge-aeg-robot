@@ -96,7 +96,8 @@ export class BabelServiceAreaRX9 {
             persistentMapId: anyArea.map.id,
             zones: this.areas.map(({ zone }) => ({
                 zoneId:    zone.id,
-                powerMode: zone.powerMode ?? RX92PowerMode.Smart
+                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+                powerMode: zone.powerMode || RX92PowerMode.Smart
             }))
         };
     }
