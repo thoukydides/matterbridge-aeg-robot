@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v1.1.19] - 2025-10-05
+### Fixed
+* Support `avoid` zones without a valid `powerMode`. (#10)
+
 ## [v1.1.18] - 2025-10-05
 ### Fixed
-* Restored support for the Service Area cluster.
+* Restored support for the Service Area cluster. (#10)
 
 ## [v1.1.17] - 2025-10-04
 ### Changed
@@ -133,7 +137,8 @@ All notable changes to this project will be documented in this file.
 
 Copyright © 2025 Alexander Thoukydides
 
-[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.18...HEAD
+[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.19...HEAD
+[v1.1.19]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.18...v1.1.19
 [v1.1.18]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.17...v1.1.18
 [v1.1.17]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.16...v1.1.17
 [v1.1.16]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.15...v1.1.16
