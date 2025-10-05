@@ -240,7 +240,7 @@ export interface RX9CleaningSession {
     id:                             string;     // e.g. 'si_832',
     isTimeReliable:                 boolean;
     lastUpdate:                     string;     // e.g. '2025-07-29T10:34:31.0182278Z'
-    messageType:                    'normal' | 'errorRemoved';
+    messageType:                    'normal' | 'error' | 'errorRemoved';
     persistentMapId?:               string;     // UUID
     persistentMapSN:                number;     // e.g. 183
     pitstopCount:                   number;     // e.g. 1
