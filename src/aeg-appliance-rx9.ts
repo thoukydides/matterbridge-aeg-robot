@@ -337,7 +337,7 @@ export class AEGApplianceRX9
 
         // Only read interactive maps if CustomPlay capability advertised
         let maps: RX9InteractiveMaps = [];
-        if ('CustomPlay' in state.properties.reported.capabilities) {
+        if ('customPlay' in state.properties.reported.capabilities) {
             maps  = await api.getInteractiveMaps();
         }
 
