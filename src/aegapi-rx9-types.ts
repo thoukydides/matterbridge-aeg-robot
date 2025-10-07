@@ -93,8 +93,15 @@ export type RX9CleaningCommand =
   | 'pause'
   | 'home';
 
-// Cleaning result
-export type RX9Completion =
+// Cleaning session actions and status
+export type RX9CleaningSessionAction =
+    'update'
+  | 'delete';
+export type RX9CleaningSessionMessageType =
+    'normal'
+  | 'error'
+  | 'errorRemoved';
+export type RX9CleaningSessionCompletion =
     'abortedByUser'
   | 'cleaningFinishedSuccessful'
   | 'cleaningFinishedSuccessfulInCharger'
@@ -102,6 +109,91 @@ export type RX9Completion =
   | 'endedNotFindingCharger'
   | 'error'
   | 'robotPowerDown';
+export type RX9CleaningSessionStartReason =
+    'App'
+  | 'Schedule'
+  | 'Ui';
+export type RX9CleaningSessionEndedReason =
+    'AbortedByUser'
+  | 'Docked'
+  | 'Nav'
+  | 'Unknown';
+
+// Per-zone cleaning status
+export type RX9CleaningSessionStatus =
+    'idle'
+  | 'approaching'
+  | 'started'
+  | 'finished'
+  | 'aborted'
+  | 'terminated';
+export enum RX9CleaningSessionClosedStatus {
+    finished                = 4,
+    aborted                 = 5,
+    terminated              = 6
+}
+
+// Zone type
+export type RX9InteractiveMapZoneType =
+    'clean'
+  | 'avoid';
+export type RX9CleaningSessionZoneType =
+    'cleanZone'
+  | 'avoidZone'
+export enum RX9CleaningSessionClosedZoneType {
+    cleanZone               = 0,
+    avoidZone               = 1
+}
+
+// Zone geometry (an arbitrary quadrilateral)
+export interface RX9ZoneVertex {
+    x:                                  number;
+    y:                                  number;
+}
+export type RX9ZoneQuadrilateral =
+    [RX9ZoneVertex, RX9ZoneVertex, RX9ZoneVertex, RX9ZoneVertex];
+
+// Cleaning map data
+export interface RX9MapPoint {
+    t:                                  number;     // e.g. 1000
+    xy:                                 [number, number]; // e.g. [-0.24129055, 0.31136945]
+}
+export interface RX9MapPointAngle {
+    t?:                                 number;     // e.g. 1000
+    xya:                                [number, number, number]; // e.g. [0.05495656, -0.03892141, -0.029699445]
+}
+export interface RX9MapTransform {
+    t:                                  number;     // e.g. 1000
+    xya:                                [number, number, number]; // e.g. [0.05495656, -0.03892141, -0.029699445]
+}
+export interface RX9MapZone {
+    uuid:                               string;     // UUID
+    type:                               number;     // e.g. 0
+    vertices:                           [RX9MapPoint, RX9MapPoint, RX9MapPoint, RX9MapPoint];
+}
+export interface RX9MapMatch {
+    sequenceNo:                         number;     // e.g. 183
+    uuid:                               string;     // UUID
+    zones:                              RX9MapZone[];
+}
+export interface RX9MapZoneStatus {
+    powerMode:                          RX92PowerMode;
+    status:                             number;     // e.g. 4
+    uuid:                               string;     // UUID
+}
+export interface RX9MapData {
+    chargerPoses:                       RX9MapPointAngle[];
+    cleaningComplete:                   number;     // e.g. 1
+    crumbCollectionDelta:               boolean;
+    crumbs?:                            RX9MapPoint[];
+    mapMatch?:                          RX9MapMatch;
+    robotPose:                          RX9MapPointAngle;
+    robotPoseReliable:                  boolean;
+    sessionId:                          number;     // e.g. 832
+    timestamp:                          string;     // e.g. '2025-07-29T11:32:40'
+    transforms:                         RX9MapTransform[];
+    zoneStatus?:                        RX9MapZoneStatus[];
+}
 
 // RX9.2 scheduled tasks (not supported by RX9.1)
 export interface RX92Zone {
@@ -231,24 +323,24 @@ export interface RX9CapabilitiesObject {
 }
 export interface RX9CleaningSessionZone {
     id:                                 string;     // UUID
-    type:                               'cleanZone' | 'avoidZone';
-    vertices:                           RX9InteractiveMapZoneVertices;
+    type:                               RX9CleaningSessionZoneType;
+    vertices:                           RX9ZoneQuadrilateral;
 }
 export interface RX9CleaningSessionZoneStatus {
     id:                                 string;     // UUID
-    status:                             'idle' | 'approaching' | 'started' | 'finished' | 'terminated';
+    status:                             RX9CleaningSessionStatus;
     powerMode:                          RX92PowerMode;
 }
 export interface RX9CleaningSession {
-    action:                             'update' | 'delete';
+    action:                             RX9CleaningSessionAction;
     areaCovered?:                       number;     // e.g. 27.900002
     cleaningDuration:                   number;     // e.g. 29900000000
-    completion?:                        RX9Completion;
+    completion?:                        RX9CleaningSessionCompletion;
     eventTime:                          string;     // e.g '2025-07-29T11:32:41'
     id:                                 string;     // e.g. 'si_832',
     isTimeReliable:                     boolean;
     lastUpdate:                         string;     // e.g. '2025-07-29T10:34:31.0182278Z'
-    messageType:                        'normal' | 'error' | 'errorRemoved';
+    messageType:                        RX9CleaningSessionMessageType;
     persistentMapId?:                   string;     // UUID
     persistentMapSN:                    number;     // e.g. 183
     pitstopCount:                       number;     // e.g. 1
@@ -263,8 +355,8 @@ export interface RX9CleaningSession {
 export interface RX9CleaningSessionClosedZone {
     id:                                 string;     // UUID
     name:                               null;
-    type:                               number;     // e.g. 0
-    vertices:                           RX9InteractiveMapZoneVertices;
+    type:                               RX9CleaningSessionClosedZoneType;
+    vertices:                           RX9ZoneQuadrilateral;
 }
 export interface RX9CleaningSessionClosedZoneStatus {
     id:                                 string;     // UUID
@@ -277,7 +369,7 @@ export interface RX9CleaningSessionClosed {
     cleaningDuration:                   number;     // e.g. 39610000000
     completion:                         number;     // e.g. 2,
     created:                            string;     // e.g. '2025-07-19T08:00:59.74'
-    endedReason:                        'AbortedByUser' | 'Nav' | 'Unknown' | null;
+    endedReason:                        RX9CleaningSessionEndedReason | null;
     eventTime:                          string;     // e.g. '2025-07-20T09:00:04'
     firmwareVersion:                    string;     // e.g. '43.23'
     id:                                 number;     // e.g. 85596328
@@ -293,50 +385,10 @@ export interface RX9CleaningSessionClosed {
     robotInternalError:                 null;
     robotUserError:                     null;
     sessionId:                          number;     // e.g. 822
-    startReason:                        'App' | 'Schedule' | 'Ui';
+    startReason:                        RX9CleaningSessionStartReason;
     startTime:                          string;     // e.g. '2025-07-19T09:00:04'
     zones:                              RX9CleaningSessionClosedZone[] | null;
     zoneStatus:                         RX9CleaningSessionClosedZoneStatus[] | null;
-}
-export interface RX9MapPoint {
-    t:                                  number;     // e.g. 1000
-    xy:                                 [number, number]; // e.g. [-0.24129055, 0.31136945]
-}
-export interface RX9MapPointAngle {
-    t?:                                 number;     // e.g. 1000
-    xya:                                [number, number, number]; // e.g. [0.05495656, -0.03892141, -0.029699445]
-}
-export interface RX9MapTransform {
-    t:                                  number;     // e.g. 1000
-    xya:                                [number, number, number]; // e.g. [0.05495656, -0.03892141, -0.029699445]
-}
-export interface RX9MapZone {
-    uuid:                               string;     // UUID
-    type:                               number;     // e.g. 0
-    vertices:                           [RX9MapPoint, RX9MapPoint, RX9MapPoint, RX9MapPoint];
-}
-export interface RX9MapMatch {
-    sequenceNo:                         number;     // e.g. 183
-    uuid:                               string;     // UUID
-    zones:                              RX9MapZone[];
-}
-export interface RX9MapZoneStatus {
-    powerMode:                          RX92PowerMode;
-    status:                             number;     // e.g. 4
-    uuid:                               string;     // UUID
-}
-export interface RX9MapData {
-    chargerPoses:                       RX9MapPointAngle[];
-    cleaningComplete:                   number;     // e.g. 1
-    crumbCollectionDelta:               boolean;
-    crumbs?:                            RX9MapPoint[];
-    mapMatch?:                          RX9MapMatch;
-    robotPose:                          RX9MapPointAngle;
-    robotPoseReliable:                  boolean;
-    sessionId:                          number;     // e.g. 832
-    timestamp:                          string;     // e.g. '2025-07-29T11:32:40'
-    transforms:                         RX9MapTransform[];
-    zoneStatus?:                        RX9MapZoneStatus[];
 }
 export interface RX9ApplianceStateReportedBase {
     applianceName:                      string;     // e.g. 'AEG RX9.2 Robot'
@@ -383,17 +435,11 @@ export interface RX9ApplianceState {
 }
 
 // GET /api/v1/appliances/{applianceId}/interactiveMap
-export interface RX9InteractiveMapVertex {
-    x:                                  number;
-    y:                                  number;
-}
-export type RX9InteractiveMapZoneVertices =
-    [RX9InteractiveMapVertex, RX9InteractiveMapVertex, RX9InteractiveMapVertex, RX9InteractiveMapVertex];
 export interface RX9InteractiveMapZone {
     name:                               string;     // e.g. 'Living Room'
     id:                                 string;     // UUID
-    zoneType:                           'clean' | 'avoid';
-    vertices:                           RX9InteractiveMapZoneVertices;
+    zoneType:                           RX9InteractiveMapZoneType;
+    vertices:                           RX9ZoneQuadrilateral;
     roomCategory:                       RX9RoomCategory;
     powerMode:                          RX92PowerMode | 0 | null;
 }
