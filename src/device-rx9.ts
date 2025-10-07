@@ -16,7 +16,8 @@ import {
     PowerSource,
     RvcCleanMode,
     RvcOperationalState,
-    RvcRunMode
+    RvcRunMode,
+    ServiceArea
 } from 'matterbridge/matter/clusters';
 import {
     ChangeToModeError,
@@ -59,6 +60,9 @@ export class DeviceRX9 extends EndpointRX9 {
         this.updateRvcRunMode();
         this.updateRvcCleanMode();
         this.updateRvcOperationalState();
+        if (babel.static.supportedAreas.length) {
+            this.updateServiceAreaCluster();
+        }
 
         // Identify the device
         this.addCommandHandler('identify', () => {
@@ -217,6 +221,17 @@ export class DeviceRX9 extends EndpointRX9 {
                     this.log.info(`${AN}RVC Operational Error${RR}: ${AV}Error cleared${RR}`);
                 }
             }
+        });
+    }
+
+    // Update the Service Area cluster attributes when required
+    updateServiceAreaCluster(): void {
+        this.babel.on('serviceArea', async ({ currentArea, progress }) => {
+            const clusterId = ServiceArea.Cluster.id;
+            const progressStatus = progress.map(({ status }) => `${AV}${ServiceArea.OperationalStatus[status]}${RR} (${AV}${status}${RR})`);
+            this.log.info(`${AN}Service Area${RR}: ${AV}${currentArea}${RR} [${progressStatus.join(', ')}]`);
+            await this.updateAttribute(clusterId, 'currentArea', currentArea, this.log);
+            await this.updateAttribute(clusterId, 'progress',    progress,    this.log);
         });
     }
 }

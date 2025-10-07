@@ -102,6 +102,17 @@ export class BabelServiceAreaRX9 {
         };
     }
 
+    // Map a zone UUID to its area identifier
+    areaIdForZoneId(zoneId: string): number | null {
+        for (let mapIndex = 0; mapIndex < this.appliance.maps.length; mapIndex++) {
+            const map = this.appliance.maps[mapIndex];
+            assertIsDefined(map);
+            const zoneIndex = map.zones.findIndex(zone => zone.id === zoneId);
+            if (zoneIndex !== -1) return encodeAreaId(mapIndex, zoneIndex);
+        }
+        return null;
+    }
+
     // Describe the selected areas
     toString(): string {
         const anyArea = this.areas[0];

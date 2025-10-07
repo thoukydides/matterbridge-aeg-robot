@@ -216,13 +216,15 @@ It also generates two events:
 
 ### Service Area Cluster
 
-The **Service Area** cluster controls which zones will be cleaned:
-* **SupportedAreas**: List of zones supported by the robot vacuum (excluding any avoid zones), across all interactive maps.
-* **SupportedMaps**: List of interactive maps supported by the robot vacuum.
-* **SelectedAreas**: List of areas that will be cleaned when the **ChangeToMode** command is next used to change **RVC Run Mode** from *Idle* to *Cleaning*. If this is an empty list then a **Play** command will be used to perform a full clean at the currently selected power level. Otherwise, a **CustomPlay** command will be used to clean the specified zones with the preferred power level configured for each zone.
+The **Service Area** cluster controls which zones will be cleaned and reports cleaning progress:
+* **SupportedAreas**: List of all zones supported by the robot vacuum (excluding any avoid zones), across all interactive maps.
+* **SupportedMaps**: List of interactive maps available on the robot vacuum.
+* **SelectedAreas**: List of areas that will be cleaned the next time **RVC Run Mode** is changed from *Idle* to *Cleaning* using the **ChangeToMode** command. If this list is empty then a **Play** command will be issued to perform an *Everywhere* clean at the currently selected power level. Otherwise, a **CustomPlay** command will be issued to perform a *Zones* clean using the preferred power level configured for each zone.
+* **CurrentArea**: The area currently being approached or cleaned during a *Zones* clean (ignoring any temporary pause for recharging) . This attribute is not available during an *Everywhere* clean.
+* **Progress**: Cleaning progress for each area during a *Zones* clean. This attribute is not available during an *Everywhere* clean.
 
 It supports a single command:
-* **SelectAreas**: Set **SelectedAreas** to the specified list of areas (with any duplicates removed). If all **SupportedAreas** are specified then it is treated as an empty list (to avoid problems with multiple maps).
+* **SelectAreas**: Sets **SelectedAreas** to the specified list of areas (removing any duplicates). If all **SupportedAreas** are specified then it is treated as an empty list to avoid problems with multiple maps.
 
 </details>
 

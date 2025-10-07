@@ -92,7 +92,7 @@ export class BabelRX9 {
     // Translate a specific value
     getState<K extends BabelEventRX9>(event: K): BabelStatusRX9[K] | undefined {
         try {
-            return BABEL_DYNAMIC_RX9[event](this.appliance.state) as BabelStatusRX9[K];
+            return BABEL_DYNAMIC_RX9[event](this.appliance.state, this.areas) as BabelStatusRX9[K];
         } catch (err) {
             logError(this.log, `Babel ${event} translation`, err);
         }

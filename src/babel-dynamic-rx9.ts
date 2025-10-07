@@ -1,11 +1,26 @@
 // Matterbridge plugin for AEG RX9 / Electrolux Pure i9 robot vacuum
 // Copyright © 2025 Alexander Thoukydides
 
-import { PowerSource, RvcOperationalState } from 'matterbridge/matter/clusters';
-import { RX92PowerMode, RX9BatteryStatus, RX9Dustbin, RX9RobotStatus } from './aegapi-rx9-types.js';
+import {
+    PowerSource,
+    RvcOperationalState,
+    ServiceArea
+} from 'matterbridge/matter/clusters';
+import {
+    RX92PowerMode,
+    RX9BatteryStatus,
+    RX9CleaningSessionStatus,
+    RX9Dustbin,
+    RX9RobotStatus
+} from './aegapi-rx9-types.js';
 import { DynamicStateRX9 } from './aeg-appliance-rx9.js';
-import { RvcRunModeRX9, RvcCleanModeRX9, RvcOperationalStateRX9 } from './behavior-rx9.js';
+import {
+    RvcRunModeRX9,
+    RvcCleanModeRX9,
+    RvcOperationalStateRX9
+} from './behavior-rx9.js';
 import { RvcOperationalStateError } from './error-rx9.js';
+import { BabelServiceAreaRX9 } from './babel-areas-rx9.js';
 
 // Helper types for converting an ordered list of property names/types
 type ExtractTypes<T extends readonly [string, unknown][]> = {
@@ -171,6 +186,33 @@ export const BABEL_DYNAMIC_RX9 = {
                 isActive:         false
             };
         }
+    },
+
+    // Current service area being cleaned and progress
+    serviceArea: ({ zoneStatus }: DynamicStateRX9, areas: BabelServiceAreaRX9): {
+        currentArea:    number | null,
+        progress:       ServiceArea.Progress[]
+     } => {
+        // Treat zone being approached or cleaned as the current location
+        const StatusCurrent: RX9CleaningSessionStatus[] = ['approaching', 'started'];
+        const currentZone = zoneStatus.find(({ status }) => StatusCurrent.includes(status));
+        const currentArea = currentZone ? areas.areaIdForZoneId(currentZone.id) : null;
+
+        // Map the progress status of each supported zone
+        const ProgressMap: Record<RX9CleaningSessionStatus, ServiceArea.OperationalStatus> = {
+            idle:           ServiceArea.OperationalStatus.Pending,
+            approaching:    ServiceArea.OperationalStatus.Pending,
+            started:        ServiceArea.OperationalStatus.Operating,
+            finished:       ServiceArea.OperationalStatus.Completed,
+            aborted:        ServiceArea.OperationalStatus.Skipped,
+            terminated:     ServiceArea.OperationalStatus.Skipped
+        };
+        const progress: ServiceArea.Progress[] = [];
+        for (const { id, status } of zoneStatus) {
+            const areaId = areas.areaIdForZoneId(id);
+            if (areaId !== null) progress.push({ areaId, status: ProgressMap[status] });
+        }
+        return { currentArea, progress };
     }
 
 } as const;

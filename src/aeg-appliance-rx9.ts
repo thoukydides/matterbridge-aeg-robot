@@ -15,7 +15,8 @@ import {
     RX92PowerMode,
     RX9RobotStatus,
     RX9InteractiveMaps,
-    RX9CustomPlayMapZones
+    RX9CustomPlayMapZones,
+    RX9CleaningSessionZoneStatus
 } from './aegapi-rx9-types.js';
 import { AEGAPIRX9 } from './aegapi-rx9.js';
 import { Appliance, ApplianceInfoDTO } from './aegapi-types.js';
@@ -26,6 +27,7 @@ import {
     AEGApplianceRX9CtrlActivity
 } from './aeg-appliance-rx9-ctrl-activity.js';
 import { logError } from './log-error.js';
+import { isDeepStrictEqual } from 'util';
 
 // Dynamic information about a robot
 export interface DynamicStateRX9 {
@@ -37,6 +39,7 @@ export interface DynamicStateRX9 {
     firmwareVersion:    string;
     robotStatus:        RX9RobotStatus;
     messages:           RX9Message[];
+    zoneStatus:         RX9CleaningSessionZoneStatus[];
     ecoMode?:           boolean;
     powerMode?:         RX92PowerMode;
     // Status polling errors
@@ -104,6 +107,7 @@ export class AEGApplianceRX9
         robotStatus:        RX9RobotStatus.Error,
         fauxStatus:         RX9RobotStatus.Error,
         messages:           [],
+        zoneStatus:         [],
         isDocked:           false,
         isCharging:         false
     };
@@ -217,6 +221,7 @@ export class AEGApplianceRX9
             firmwareVersion:    reported.firmwareVersion,
             robotStatus:        reported.robotStatus,
             messages:           messageList.messages,
+            zoneStatus:         reported.cleaningSession?.zoneStatus ?? [],
             ecoMode:            'ecoMode'   in reported ? reported.ecoMode   : undefined,
             powerMode:          'powerMode' in reported ? reported.powerMode : undefined
         });
@@ -274,15 +279,7 @@ export class AEGApplianceRX9
     emitChangeEvents(): void {
         // Identify the values that have changed
         const keys = Object.keys(this.state) as StatusEventRX9[];
-        const changed = keys.filter(key => {
-            const a = this.state[key], b = this.emittedState[key];
-            if (Array.isArray(a) && Array.isArray(b)) {
-                return a.length !== b.length
-                    || a.some((element, index) => element !== b[index]);
-            } else {
-                return a !== b;
-            }
-        });
+        const changed = keys.filter(key => !isDeepStrictEqual(this.state[key], this.emittedState[key]));
         if (!changed.length) return;
 
         // Log a summary of the changes

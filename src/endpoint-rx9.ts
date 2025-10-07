@@ -357,7 +357,8 @@ export class EndpointRX9 extends MatterbridgeEndpoint {
     createServiceAreaClusterServer(): this {
         this.behaviors.require(ServiceAreaServerRX9.withFeatures(
             ServiceArea.Feature.Maps,
-            ServiceArea.Feature.SelectWhileRunning
+            ServiceArea.Feature.SelectWhileRunning,
+            ServiceArea.Feature.ProgressReporting
         ).enable({
             commands: {
                 selectAreas:            true
@@ -367,9 +368,10 @@ export class EndpointRX9 extends MatterbridgeEndpoint {
             supportedAreas:         this.information.supportedAreas,
             supportedMaps:          this.information.supportedMaps,
             // Variable attributes (with dummy defaults)
+            currentArea:            null,
+            progress:               [],
             selectedAreas:          [],
             // Unsupported attributes
-            currentArea:            undefined,
             estimatedEndTime:       undefined
         });
         return this;
