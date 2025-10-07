@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v1.2.0] - 2025-10-07
+### Added
+* Service Area `CurrentArea` and `Progress` status attributes during a *Zones* clean (not supported by *Everywhere* clean).
+
 ## [v1.1.19] - 2025-10-05
 ### Fixed
 * Support `avoid` zones without a valid `powerMode`. (#10)
@@ -137,7 +141,8 @@ All notable changes to this project will be documented in this file.
 
 Copyright © 2025 Alexander Thoukydides
 
-[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.19...HEAD
+[Unreleased]:       https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.2.0...HEAD
+[v1.2.0]:           https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.19...v1.2.0
 [v1.1.19]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.18...v1.1.19
 [v1.1.18]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.17...v1.1.18
 [v1.1.17]:          https://github.com/thoukydides/matterbridge-aeg-robot/compare/v1.1.16...v1.1.17
