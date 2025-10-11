@@ -227,9 +227,15 @@ export class DeviceRX9 extends EndpointRX9 {
     // Update the Service Area cluster attributes when required
     updateServiceAreaCluster(): void {
         this.babel.on('serviceArea', async ({ currentArea, progress }) => {
+            const areaName = (areaId: number | null): string => {
+                if (areaId === null) return 'None';
+                const area = this.information.supportedAreas.find(area => area.areaId === areaId);
+                return area?.areaInfo.locationInfo?.locationName ?? `Unknown ${areaId}`;
+            };
             const clusterId = ServiceArea.Cluster.id;
-            const progressStatus = progress.map(({ status }) => `${AV}${ServiceArea.OperationalStatus[status]}${RR} (${AV}${status}${RR})`);
-            this.log.info(`${AN}Service Area${RR}: ${AV}${currentArea}${RR} [${progressStatus.join(', ')}]`);
+            const progressStatus = progress.map(({ areaId, status }) =>
+                `${AV}${areaName(areaId)}${RR}: ${AV}${ServiceArea.OperationalStatus[status]}${RR} (${AV}${status}${RR})`);
+            this.log.info(`${AN}Service Area${RR}: ${AV}${areaName(currentArea)}${RR} [${progressStatus.join(', ')}]`);
             await this.updateAttribute(clusterId, 'currentArea', currentArea, this.log);
             await this.updateAttribute(clusterId, 'progress',    progress,    this.log);
         });
