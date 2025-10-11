@@ -12,6 +12,11 @@ import {
     RX9RobotStatus
 } from './aegapi-rx9-types.js';
 import { RR, RT, RV } from './logger-options.js';
+import {
+    aegRobotMap,
+    MAP_CONFIG_MATTERBRIDGE,
+    MAP_CONFIG_MONOSPACED
+} from './aeg-map.js';
 
 // Descriptions of the robot activity
 const activityNames: Record<RX9RobotStatus, string | null> = {
@@ -74,6 +79,7 @@ export class AEGApplianceRX9Log {
         this.logStatic();
         this.logStatus();
         this.logMessages();
+        this.logMaps();
     }
 
     // Log static information about the robot once at startup
@@ -143,6 +149,19 @@ export class AEGApplianceRX9Log {
             if (message.internalErrorId) bits.push(`internal-error=${message.internalErrorId}`);
             this.log.warn(`Message: ${message.text} (${age})`);
             this.log.debug(`Message: ${formatList(bits)}`);
+        });
+    }
+
+    // Log map data from the robot
+    logMaps(): void {
+        this.appliance.on('map', (mapData, mapDataExtra) => {
+            const { logMapStyle } = this.appliance.config;
+            if (logMapStyle !== 'Off') {
+                const mapStyle = logMapStyle === 'Matterbridge'
+                    ? MAP_CONFIG_MATTERBRIDGE : MAP_CONFIG_MONOSPACED;
+                const mapText = aegRobotMap(mapStyle, mapData, mapDataExtra);
+                for (const line of mapText) this.log.info(line);
+            }
         });
     }
 }

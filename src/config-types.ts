@@ -11,6 +11,12 @@ export type DebugFeatures =
     | 'Log Appliance IDs'
     | 'Log Debug as Info';
 
+// Robot vacuum map logging style
+export type LogMapStyle =
+    'Off'
+  | 'Monospaced'
+  | 'Matterbridge';
+
 // The user plugin configuration
 export interface Config {
     // Matterbridge additions
@@ -26,6 +32,7 @@ export interface Config {
     refreshToken:           string;
     pollIntervalSeconds:    number;
     enableServerRvc:        boolean;
+    logMapStyle:            LogMapStyle;
     debug:                  boolean;
     debugFeatures:          DebugFeatures[];
     unregisterOnShutdown:   boolean;

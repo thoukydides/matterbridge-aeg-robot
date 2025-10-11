@@ -16,7 +16,9 @@ import {
     RX9RobotStatus,
     RX9InteractiveMaps,
     RX9CustomPlayMapZones,
-    RX9CleaningSessionZoneStatus
+    RX9CleaningSessionZoneStatus,
+    RX9MapData,
+    RX9CleaningComplete
 } from './aegapi-rx9-types.js';
 import { AEGAPIRX9 } from './aegapi-rx9.js';
 import { Appliance, ApplianceInfoDTO } from './aegapi-types.js';
@@ -28,6 +30,7 @@ import {
 } from './aeg-appliance-rx9-ctrl-activity.js';
 import { logError } from './log-error.js';
 import { isDeepStrictEqual } from 'util';
+import { MapDataExtra } from './aeg-map.js';
 
 // Dynamic information about a robot
 export interface DynamicStateRX9 {
@@ -62,6 +65,7 @@ interface OtherEventMap {
     error:          [unknown];                              // Error event (from EventEmitter)
     preEmitPatch:   [DynamicStateRX9];                      // Opportunity to fake state
     message:        [RX9Message];                           // New message received from API
+    map:            [RX9MapData, MapDataExtra];             // Map data when cleaning complete
     changed:        [StatusEventRX9[], DynamicStateRX9];    // List of changed keys
 };
 
@@ -112,10 +116,10 @@ export class AEGApplianceRX9
         isCharging:         false
     };
 
+    // State that has been emitted as events
     private emittedState: Partial<DynamicStateRX9> = {};
-
-    // Messages about the robot
-    private readonly emittedMessages = new Set<number>();
+    private readonly emittedMessages    = new Set<number>();
+    private readonly emittedMaps        = new Set<number>();
 
     // Periodic API polling
     poll?: PeriodicOp;
@@ -194,6 +198,7 @@ export class AEGApplianceRX9
         const state = await this.api.getApplianceState();
         this.updateFromApplianceState(state);
         this.updateDerivedAndEmit();
+        this.emitMapEvent(state);
     }
 
     // Handle a status update for a periodic action
@@ -324,6 +329,32 @@ export class AEGApplianceRX9
                 this.emit('message', message);
             }
         });
+    }
+
+    // Emit map data at the end of a cleaning session
+    emitMapEvent(state: RX9ApplianceState): void {
+        const { mapData } = state.properties.reported;
+        if (!mapData) return;
+        const { sessionId } = mapData;
+
+        // Only emit the map data once when cleaning completes
+        if (mapData.cleaningComplete === RX9CleaningComplete.incomplete) return;
+        if (this.emittedMaps.has(sessionId)) return;
+        this.emittedMaps.add(sessionId);
+
+        // Find any matching cleaning session and/or interactive map
+        let { cleaningSession, cleaningSessionClosed } = state.properties.reported;
+        if (cleaningSession      ?.sessionId !== sessionId) cleaningSession       = undefined;
+        if (cleaningSessionClosed?.sessionId !== sessionId) cleaningSessionClosed = undefined;
+        const mapId = mapData.mapMatch?.uuid ?? cleaningSession?.persistentMapId ?? cleaningSessionClosed?.persistentMapId;
+        const mapDataExtra: MapDataExtra = {
+            session:        cleaningSession,
+            sessionClosed:  cleaningSessionClosed,
+            interactive:    this.maps.find(m => m.id === mapId)
+        };
+
+        // Emit the event
+        this.emit('map', mapData, mapDataExtra);
     }
 
     // Create a new AEG RX 9 / Electrolux Pure i9 robot manager

@@ -49,6 +49,25 @@
             "type": "boolean",
             "default": true
         },
+        "logMapStyle": {
+            "description": "Select how robot vacuum cleaner maps should be displayed in the log at the end of cleans.",
+            "type": "string",
+            "oneOf": [
+                {
+                    "const": "Off",
+                    "title": "No map logging"
+                },
+                {
+                    "const": "Monospaced",
+                    "title": "Highest quality (requires monospaced font)"
+                },
+                {
+                    "const": "Matterbridge",
+                    "title": "Optimised for Matterbridge frontend"
+                }
+            ],
+            "default": "Matterbridge"
+        },
         "whiteList": {
             "description": "Only expose robot vacuum devices listed here, identified by their serial number. Leave empty to expose all devices.",
             "type": "array",

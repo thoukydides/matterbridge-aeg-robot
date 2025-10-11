@@ -127,10 +127,17 @@ export type RX9CleaningSessionStatus =
   | 'finished'
   | 'aborted'
   | 'terminated';
-export enum RX9CleaningSessionClosedStatus {
+export enum RX9ZoneStatus {
+    idle                    = 1,
+    approaching             = 2,
+    started                 = 3,
     finished                = 4,
     aborted                 = 5,
     terminated              = 6
+}
+export enum RX9CleaningComplete {
+    incomplete              = 0,
+    complete                = 1
 }
 
 // Zone type
@@ -140,7 +147,7 @@ export type RX9InteractiveMapZoneType =
 export type RX9CleaningSessionZoneType =
     'cleanZone'
   | 'avoidZone'
-export enum RX9CleaningSessionClosedZoneType {
+export enum RX9ZoneType {
     cleanZone               = 0,
     avoidZone               = 1
 }
@@ -168,7 +175,7 @@ export interface RX9MapTransform {
 }
 export interface RX9MapZone {
     uuid:                               string;     // UUID
-    type:                               number;     // e.g. 0
+    type:                               RX9ZoneType;
     vertices:                           [RX9MapPoint, RX9MapPoint, RX9MapPoint, RX9MapPoint];
 }
 export interface RX9MapMatch {
@@ -178,12 +185,12 @@ export interface RX9MapMatch {
 }
 export interface RX9MapZoneStatus {
     powerMode:                          RX92PowerMode;
-    status:                             number;     // e.g. 4
+    status:                             RX9ZoneStatus;
     uuid:                               string;     // UUID
 }
 export interface RX9MapData {
     chargerPoses:                       RX9MapPointAngle[];
-    cleaningComplete:                   number;     // e.g. 1
+    cleaningComplete:                   RX9CleaningComplete;
     crumbCollectionDelta:               boolean;
     crumbs?:                            RX9MapPoint[];
     mapMatch?:                          RX9MapMatch;
@@ -355,12 +362,12 @@ export interface RX9CleaningSession {
 export interface RX9CleaningSessionClosedZone {
     id:                                 string;     // UUID
     name:                               null;
-    type:                               RX9CleaningSessionClosedZoneType;
+    type:                               RX9ZoneType;
     vertices:                           RX9ZoneQuadrilateral;
 }
 export interface RX9CleaningSessionClosedZoneStatus {
     id:                                 string;     // UUID
-    status:                             number;
+    status:                             RX9ZoneStatus;
     powerMode:                          RX92PowerMode;
 }
 export interface RX9CleaningSessionClosed {
