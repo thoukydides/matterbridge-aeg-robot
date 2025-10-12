@@ -204,6 +204,7 @@ export interface RX9MapData {
 
 // RX9.2 scheduled tasks (not supported by RX9.1)
 export interface RX92Zone {
+    goZonesId?:                         string;     // UUID
     powerMode:                          RX92PowerMode;
 }
 export interface RX92Task {
@@ -212,6 +213,7 @@ export interface RX92Task {
         weekDays:                       WeekdayLC[];
         time:                           string;     // e.g. '09:00:13'
         properties: {
+            persistentMapId?:           string;     // UUID
             zones:                      RX92Zone[];
         }
     }
