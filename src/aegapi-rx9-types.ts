@@ -408,9 +408,11 @@ export interface RX9ApplianceStateReportedBase {
     cleaningSessionClosed?:             RX9CleaningSessionClosed;
     deviceId?:                          string;     // e.g. '900277479937001234567890'
     dustbinStatus:                      RX9Dustbin;
+    filter_sqm?:                        number;
     firmwareVersion:                    string;     // e.g. '43.23'
     gw?:                                RX9Gateway;
     language:                           string;     // e.g. 'eng'
+    main_brush_sqm?:                    number;
     mapData?:                           RX9MapData;
     messageList: {
         messages:                       RX9Message[];
@@ -423,6 +425,7 @@ export interface RX9ApplianceStateReportedBase {
     platform:                           string;     // e.g. '1.01'
     robotPushMessage?:                  RX9RobotPushMessage;
     robotStatus:                        RX9RobotStatus;
+    side_brush_sqm?:                    number;
 }
 export interface RX91ApplianceStateReported extends RX9ApplianceStateReportedBase {
     ecoMode:                            boolean;
