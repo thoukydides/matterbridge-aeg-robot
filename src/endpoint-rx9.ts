@@ -79,7 +79,7 @@ export class EndpointRX9 extends MatterbridgeEndpoint {
         const mode = config.enableServerRvc ? 'server' : undefined;
         if (!mode) definition.push(bridgedNode);
         const debug = config.debugFeatures.includes('Log Endpoint Debug');
-        super(definition, { uniqueStorageKey: information.uniqueStorageKey, mode }, debug);
+        super(definition, { id: information.uniqueStorageKey, mode }, debug);
 
         // Use supplied logger instead of the one created by the base class
         this.log = log;
