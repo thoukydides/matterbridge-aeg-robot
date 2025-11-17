@@ -2,7 +2,7 @@
     "name": "matterbridge-aeg-robot",
     "description": "A Matterbridge plugin that connects AEG RX 9 / Electrolux Pure i9 robot vacuums to the Matter smart home ecosystem.",
     "displayName": "AEG Robot",
-    "version": "1.3.3",
+    "version": "1.3.4",
     "license": "ISC",
     "keywords": [
         "Matterbridge",
