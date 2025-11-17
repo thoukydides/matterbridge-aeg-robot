@@ -5,9 +5,9 @@
 
 # matterbridge-aeg-robot
 
-[![npm](https://badgen.net/npm/v/matterbridge-aeg-robot)](https://www.npmjs.com/package/matterbridge-aeg-robot)
-[![npm](https://badgen.net/npm/dt/matterbridge-aeg-robot)](https://www.npmjs.com/package/matterbridge-aeg-robot)
-[![npm](https://badgen.net/npm/dw/matterbridge-aeg-robot)](https://www.npmjs.com/package/matterbridge-aeg-robot)
+[![npm](https://img.shields.io/npm/v/matterbridge-aeg-robot?label=Latest)](https://www.npmjs.com/package/matterbridge-aeg-robot)
+[![npm](https://img.shields.io/npm/dt/matterbridge-aeg-robot?logo=npm&label=Downloads)](https://www.npmjs.com/package/matterbridge-aeg-robot)
+[![npm](https://img.shields.io/npm/dw/matterbridge-aeg-robot?label=)](https://www.npmjs.com/package/matterbridge-aeg-robot)
 [![Build and Lint](https://github.com/thoukydides/matterbridge-aeg-robot/actions/workflows/build.yml/badge.svg)](https://github.com/thoukydides/matterbridge-aeg-robot/actions/workflows/build.yml)
 [![Test](https://github.com/thoukydides/matterbridge-aeg-robot/actions/workflows/test.yml/badge.svg)](https://github.com/thoukydides/matterbridge-aeg-robot/actions/workflows/test.yml)
 
