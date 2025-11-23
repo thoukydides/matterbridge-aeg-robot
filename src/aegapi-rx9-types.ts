@@ -460,7 +460,7 @@ export interface RX9InteractiveMap {
     id:                                 string;     // UUID
     timestamp:                          string;     // e.g. '2023-12-20T14:10:43+00:00'
     rotation:                           number;     // e.g. 0
-    zones:                              RX9InteractiveMapZone[];
+    zones:                              RX9InteractiveMapZone[] | null;
 }
 export type RX9InteractiveMaps = RX9InteractiveMap[];
 

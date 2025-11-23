@@ -161,7 +161,7 @@ function preprocessZones(
     });
 
     // Attempt to name the zones from the interactive map
-    interactive?.zones.forEach(({ id, vertices, name, zoneType }) => {
+    interactive?.zones?.forEach(({ id, vertices, name, zoneType }) => {
         let zone = zones.get(id);
         if (!zone) {
             zone = {

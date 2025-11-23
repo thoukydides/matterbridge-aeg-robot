@@ -61,7 +61,7 @@ export class BabelServiceAreaRX9 {
     // List of supported areas (zones) for cleaning
     get supportedAreas(): ServiceArea.Area[] {
         return this.appliance.maps.flatMap(({ zones }, mapIndex) =>
-            zones
+            (zones ?? [])
                 .filter(zone => zone.zoneType === 'clean') // Exclude 'avoid' zones
                 .map(({ name, roomCategory }, zoneIndex) => ({
                     mapId:  mapIndex,
@@ -85,7 +85,7 @@ export class BabelServiceAreaRX9 {
             const { mapIndex, zoneIndex } = decodeAreaId(areaId);
             const map = this.appliance.maps[mapIndex];
             assertIsDefined(map);
-            const zone = map.zones[zoneIndex];
+            const zone = map.zones?.[zoneIndex];
             assertIsDefined(zone);
             return { map, zone };
         });
@@ -107,7 +107,7 @@ export class BabelServiceAreaRX9 {
         for (let mapIndex = 0; mapIndex < this.appliance.maps.length; mapIndex++) {
             const map = this.appliance.maps[mapIndex];
             assertIsDefined(map);
-            const zoneIndex = map.zones.findIndex(zone => zone.id === zoneId);
+            const zoneIndex = (map.zones ?? []).findIndex(zone => zone.id === zoneId);
             if (zoneIndex !== -1) return encodeAreaId(mapIndex, zoneIndex);
         }
         return null;

@@ -106,8 +106,8 @@ export class AEGAPITest {
         await test('sendCommand', applianceId, { CleaningCommand: 'home' });
         await rx9test('sendCleaningCommand', 'home');
         if (map) {
-            const zones = map.zones.map(({ id }) => ({ zoneId: id, powerMode: RX92PowerMode.Power }));
-            await rx9test('sendCustomPlayCommand', map.id, zones);
+            const zones = map.zones?.map(({ id }) => ({ zoneId: id, powerMode: RX92PowerMode.Power }));
+            await rx9test('sendCustomPlayCommand', map.id, zones ?? []);
         }
     }
 
